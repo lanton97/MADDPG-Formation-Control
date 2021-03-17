@@ -5,6 +5,8 @@ from gym.envs.registration import EnvSpec
 import numpy as np
 from multiagent.environment import MultiAgentEnv
 
+# TODO: Clean this to use just the super init and change the one parameter we need
+
 # environment for all agents in the multiagent world
 # currently code assumes that no agents will be created/destroyed at runtime!
 class ContMultiAgentEnv(MultiAgentEnv):
@@ -29,6 +31,7 @@ class ContMultiAgentEnv(MultiAgentEnv):
         # environment parameters
         self.discrete_action_space = False
         # if true, action is a number 0...N, otherwise action is a one-hot N-dimensional vector
+        # This is the 
         self.discrete_action_input = False
         # if true, even the action is continuous, action will be performed discretely
         self.force_discrete_action = False#world.discrete_action if hasattr(world, 'discrete_action') else False

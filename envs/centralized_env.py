@@ -1,4 +1,3 @@
-# Modified from https://github.com/openai/multiagent-particle-envs
 import gym
 from gym import spaces
 from gym.envs.registration import EnvSpec
@@ -25,13 +24,15 @@ class CentralizedEnvWrapper():
         act_lows = np.reshape(np.array([a.low for a in env.action_space]), (total_acts,))
         act_highs = np.reshape(np.array([a.high for a in env.action_space]), (total_acts,))
         self.action_space = spaces.Box(act_lows, act_highs)#, shape=shape)
-    
+   
+    # Multiple observations into a single one
     def join_lists(self, lists):
         out_list = []
         for list in lists:
             out_list.extend(list)
         return out_list
 
+    # ONe list of actions into N sets of actions for N agents
     def split_actions(self, actions):
         out_actions = []
         for i in range(self.num_agents):
@@ -47,6 +48,7 @@ class CentralizedEnvWrapper():
         split_acts = self.split_actions(action)
         state, reward, done, info = self.env.step(split_acts)
         state = self.join_lists(state)
+        # Use the sum as we are centralized
         reward = np.sum(reward)
         done   = done[0]
 
