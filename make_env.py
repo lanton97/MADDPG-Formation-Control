@@ -1,6 +1,6 @@
 import time
 import numpy as np
-import ddpg
+from agents.ddpg import DDPGAgent
 import matplotlib.pyplot as plt
 from gym import spaces
 from envs.centralized_env import CentralizedEnvWrapper
@@ -25,7 +25,7 @@ def make_env(scenario_name, benchmark=False):
 # Test Code here
 # This uses the centralized wrapper
 env = CentralizedEnvWrapper(make_env("simple_formation"))
-agent = ddpg.DDPGAgent(env)
+agent = DDPGAgent(env)
 rewards, avg_rewards = agent.train(500)
 
 plt.plot(rewards)
