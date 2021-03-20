@@ -56,3 +56,6 @@ class CentralizedEnvWrapper():
         
     def render(self):
         self.env.render()
+        
+    def close(self):
+        self.env.close()

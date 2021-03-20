@@ -117,7 +117,7 @@ class DDPGAgent():
  
             # 1000 step or 100 seconds for now
             for i in range(100):
-                if ep % 1000 == 0:
+                if ep % 50 == 0:
                     self._env.render()
   
                 tf_prev_state = tf.expand_dims(tf.convert_to_tensor(prev_state), 0)
