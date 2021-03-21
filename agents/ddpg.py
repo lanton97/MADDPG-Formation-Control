@@ -8,6 +8,8 @@ import matplotlib.pyplot as plt
 from agents.nets.actor_network import generate_actor_network
 from agents.nets.critic_network import generate_critic_network
 from agents.util import * 
+import tqdm
+import time
 
 class DDPGAgent():
     def  __init__(
@@ -105,49 +107,79 @@ class DDPGAgent():
         for (a, b) in zip(target_weights, weights):
             a.assign(b * self._tau + a * (1 - self._tau))
 
-    def train(self, num_episodes=100):
+    def train(self, num_episodes=100, num_steps=100):
         ep_reward_list =[]
         avg_reward_list = []
  
-        for ep in range(num_episodes):
- 
-            prev_state = self._env.reset()
-            prev_state = prev_state
-            episodic_reward = 0
- 
-            # 1000 step or 100 seconds for now
-            for i in range(100):
-                if ep % 50 == 0:
-                    self._env.render()
-  
-                tf_prev_state = tf.expand_dims(tf.convert_to_tensor(prev_state), 0)
- 
-                action = self.policy(tf_prev_state, self._noise)
-                # Recieve state and reward from environment.
-                state, reward, done, info = self._env.step(action)
-                action = action[0]
-                reward = tf.cast(reward, dtype=tf.float32)
-                #print(state) 
-                self._buffer.add((prev_state, action, reward, state, done))
-                episodic_reward += reward
-  
-                self.update(*self._buffer.sample_batch(self._batch_size))
-
-                self.update_target(self._target_actor.variables, self._actor_model.variables)
-                self.update_target(self._target_critic.variables, self._critic_model.variables)
-  
-                # End this episode when `done` is True
-                #if done:
-                    #break
-  
-                prev_state = state
-  
-            ep_reward_list.append(episodic_reward)
-  
-            # Mean of last 40 episodes
-            avg_reward = np.mean(ep_reward_list[-40:])
-            print("Episode * {} * Avg Reward is ==> {}".format(ep, avg_reward))
-            avg_reward_list.append(avg_reward)
-
+        with tqdm.trange(num_episodes) as t:
+            for i in t:
+                episodic_reward = self.train_episode(num_steps)
+                ep_reward_list.append(episodic_reward)
+                # Mean of last 40 episodes
+                avg_reward = np.mean(ep_reward_list[-40:])
+                #print("Episode * {} * Avg Reward is ==> {}".format(ep, avg_reward))
+                t.set_description(f'Episode {i}')
+                episodic_reward_str = "⠀{:6.0f}".format(episodic_reward) #Extra spacing was ignored. So I added an invisible character right before
+                avg_reward_str = "⠀{:6.0f}".format(avg_reward)
+                t.set_postfix(episodic_reward=episodic_reward_str, average_reward=avg_reward_str)
+                avg_reward_list.append(avg_reward)
+           
         return ep_reward_list, avg_reward_list
 
+    def train_episode(self, num_steps=100, render=False):
+        prev_state = self._env.reset()
+        prev_state = prev_state
+        episodic_reward = 0
+
+        for i in range(num_steps):
+            if render:
+                self._env.render()
+
+            tf_prev_state = tf.expand_dims(tf.convert_to_tensor(prev_state), 0)
+
+            action = self.policy(tf_prev_state, self._noise)
+            # Recieve state and reward from environment.
+            state, reward, done, info = self._env.step(action)
+            action = action[0]
+            reward = tf.cast(reward, dtype=tf.float32)
+            #print(state) 
+            self._buffer.add((prev_state, action, reward, state, done))
+            episodic_reward += reward
+
+            self.update(*self._buffer.sample_batch(self._batch_size))
+
+            self.update_target(self._target_actor.variables, self._actor_model.variables)
+            self.update_target(self._target_critic.variables, self._critic_model.variables)
+
+            # End this episode when `done` is True
+            #if done:
+                #break
+            prev_state = state
+        return episodic_reward
+    
+    def run_episode(self, num_steps=100, render=True, waitTime=0.1):
+        prev_state = self._env.reset()
+        prev_state = prev_state
+        episodic_reward = 0
+
+        for i in range(num_steps):
+            print("Step {}".format(i))
+            if render:
+                self._env.render()
+            tf_prev_state = tf.expand_dims(tf.convert_to_tensor(prev_state), 0)
+
+            action = self.policy(tf_prev_state, 0)
+            # Recieve state and reward from environment.
+            state, reward, done, info = self._env.step(action)
+            reward = tf.cast(reward, dtype=tf.float32)
+            #print(state) 
+            episodic_reward += reward
+            # End this episode when `done` is True
+            #if done:
+                #break
+            prev_state = state
+            time.sleep(waitTime)
+        return episodic_reward
+
+
+        
