@@ -27,20 +27,12 @@ def make_env(scenario_name, benchmark=False):
 # This uses the centralized wrapper
 env = CentralizedEnvWrapper(make_env("simple"))
 agent = ddpg.DDPGAgent(env)
-<<<<<<< Updated upstream
+
 print("Training Model")
 rewards, avg_rewards = agent.train(500)
 
 input("Press to run trained model") # Even requesting a key press, for us to be prepared to watch the model
 agent.run_episode(waitTime = 0.1) # Should we store the model that obtained the best reward? or always use the last one?
-=======
-rewards, avg_rewards = agent.train(30)
-
-#env.close()
->>>>>>> Stashed changes
-
-#env.render()
-#env.close()
 
 print('Finished!')
 

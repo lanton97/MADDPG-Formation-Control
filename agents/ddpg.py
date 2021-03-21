@@ -167,8 +167,9 @@ class DDPGAgent():
             if render:
                 self._env.render()
             tf_prev_state = tf.expand_dims(tf.convert_to_tensor(prev_state), 0)
-
-            action = self.policy(tf_prev_state, 0)
+            def zero_noise(): # Workaround until we have a better way to call the policy without noise
+                return 0
+            action = self.policy(tf_prev_state, zero_noise) # TODO: Change how we pass noise
             # Recieve state and reward from environment.
             state, reward, done, info = self._env.step(action)
             reward = tf.cast(reward, dtype=tf.float32)
