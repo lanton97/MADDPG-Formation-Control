@@ -110,10 +110,11 @@ class DDPGAgent():
     def train(self, num_episodes=100, num_steps=100):
         ep_reward_list =[]
         avg_reward_list = []
+        info_buffer = []
  
         with tqdm.trange(num_episodes) as t:
             for i in t:
-                episodic_reward = self.train_episode(num_steps)
+                episodic_reward, info = self.train_episode(num_steps)
                 ep_reward_list.append(episodic_reward)
                 # Mean of last 40 episodes
                 avg_reward = np.mean(ep_reward_list[-40:])
@@ -123,13 +124,15 @@ class DDPGAgent():
                 avg_reward_str = "⠀{:6.0f}".format(avg_reward)
                 t.set_postfix(episodic_reward=episodic_reward_str, average_reward=avg_reward_str)
                 avg_reward_list.append(avg_reward)
+                info_buffer.append(info)
            
-        return ep_reward_list, avg_reward_list
+        return ep_reward_list, avg_reward_list, info_buffer
 
     def train_episode(self, num_steps=100, render=False):
         prev_state = self._env.reset()
         prev_state = prev_state
         episodic_reward = 0
+        episode_info = []
 
         for i in range(num_steps):
             if render:
@@ -155,12 +158,15 @@ class DDPGAgent():
             #if done:
                 #break
             prev_state = state
-        return episodic_reward
+            episode_info.append(info)
+
+        return episodic_reward, episode_info
     
     def run_episode(self, num_steps=100, render=True, waitTime=0.1):
         prev_state = self._env.reset()
         prev_state = prev_state
         episodic_reward = 0
+        episode_info = []
 
         for i in range(num_steps):
             print("Step {}".format(i))
@@ -180,7 +186,9 @@ class DDPGAgent():
                 #break
             prev_state = state
             time.sleep(waitTime)
-        return episodic_reward
+            episode_info.append(info)
+
+        return episodic_reward, episode_info
 
 
         

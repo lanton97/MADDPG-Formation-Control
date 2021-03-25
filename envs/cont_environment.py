@@ -52,7 +52,11 @@ class ContMultiAgentEnv(MultiAgentEnv):
     # We override the 
     def step(self, action_n):
         obs_n, reward_n, done_n, info_n = super().step(action_n)
+        # The function passes back a Dict
+        # I suggest we use that if we plan to use more information, but if its
+        # Just positions, this is fine
+        info_n = []
         for agent in self.agents:
-            info_n.append(agents.state.p_pos)
+            info_n.append(agent.state.p_pos)
 
         return obs_n, reward_n, done_n, info_n
