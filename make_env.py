@@ -16,7 +16,7 @@ def make_env(scenario_name, benchmark=False):
     world = scenario.make_world()
     # create multiagent environment
     if benchmark:        
-        env = ContMultiAgentEnv(world, scenario.reset_world, scenario.reward, scenario.observation, scenario.benchmark_data)
+        env = ContMultiAgentEnv(world, scenario.reset_world, scenario.reward, scenario.observation, scenario.benchmark_data, scenario.done)
     else:
         env = ContMultiAgentEnv(world, scenario.reset_world, scenario.reward, scenario.observation)
     return env
@@ -24,9 +24,12 @@ def make_env(scenario_name, benchmark=False):
 
 # Test Code here
 # This uses the centralized wrapper
-env = CentralizedEnvWrapper(make_env("simple_formation"))
+env = CentralizedEnvWrapper(make_env("formation_w_coll_avoidance"))
 agent = DDPGAgent(env)
-rewards, avg_rewards = agent.train(500)
+rewards, avg_rewards, info = agent.train(500)
+
+input("press to run trained model") # even requesting a key press, for us to be prepared to watch the model
+agent.run_episode(waittime = 0.1) # should we store the model that obtained the best reward? or always use the last one?
 
 plt.plot(rewards)
 plt.plot(avg_rewards)
