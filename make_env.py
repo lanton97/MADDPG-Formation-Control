@@ -5,7 +5,7 @@ import matplotlib.pyplot as plt
 from gym import spaces
 from envs.centralized_env import CentralizedEnvWrapper
 from envs.cont_environment import ContMultiAgentEnv
-import envs as scenarios
+import envs.scenarios as scenarios
 
 # Adapted from the multi-agent particle env to use a continuous environment
 def make_env(scenario_name, benchmark=False):
