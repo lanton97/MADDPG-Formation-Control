@@ -94,9 +94,8 @@ class Scenario(BaseScenario):
         for obst in world.landmarks:
             rel_pos = (agent.state.p_pos - obst.state.p_pos)
             obs = np.concatenate([obs, rel_pos])
-
-        obs = np.concatenate([obs, self.goal_pos])
-
+        rel_goal = agent.state.p_pos - self.goal_pos
+        obs = np.concatenate([obs, rel_goal])
         return obs
 
     # In this scenario, we only go terminal if there is a collision
