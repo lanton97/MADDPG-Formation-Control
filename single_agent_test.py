@@ -7,6 +7,7 @@ from envs.centralized_env import CentralizedEnvWrapper
 from envs.cont_environment import ContMultiAgentEnv
 import multiagent.scenarios as scenarios
 import tensorflow as tf
+import envs as scenarios
 
 # Adapted from the multi-agent particle env to use a continuous environment
 def make_env(scenario_name, benchmark=False):
@@ -15,26 +16,28 @@ def make_env(scenario_name, benchmark=False):
     scenario = scenarios.load(scenario_name + ".py").Scenario()
     # create world
     world = scenario.make_world()
+    scenario.maxVelAndSensitivity(world, 0.1,1)
     # create multiagent environment
     if benchmark:        
         env = ContMultiAgentEnv(world, scenario.reset_world, scenario.reward, scenario.observation, scenario.benchmark_data)
     else:
-        env = ContMultiAgentEnv(world, scenario.reset_world, scenario.reward, scenario.observation)
+        env = ContMultiAgentEnv(world, scenario.reset_world, scenario.reward, scenario.observation, shared_viewer=False)
     return env
 
 
 # Test Code here
 # This uses the centralized wrapper
-env = CentralizedEnvWrapper(make_env("simple"))
+env = CentralizedEnvWrapper(make_env("simple_custom_vel"))
 agent = ddpg.DDPGAgent(env)
 
 print("Training Model")
-rewards, avg_rewards, info = agent.train(500)
+rewards, avg_rewards, info = agent.train(500, 500)
 
 input("Press to run trained model") # Even requesting a key press, for us to be prepared to watch the model
-agent.run_episode(waitTime = 0.1) # Should we store the model that obtained the best reward? or always use the last one?
+agent.run_episode(500, waitTime = 0.05) # Should we store the model that obtained the best reward? or always use the last one?
 
 print('Finished!')
+
 
 print(info[-1])
 

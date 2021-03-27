@@ -48,3 +48,9 @@ class Scenario(BaseScenario):
         for entity in world.landmarks:
             entity_pos.append(entity.state.p_pos - agent.state.p_pos)
         return np.concatenate([agent.state.p_vel] + entity_pos)
+
+
+    def maxVelAndSensitivity(self, world, max_vel, sensitivity):
+        for i, agent in enumerate(world.agents):
+            agent.max_speed = max_vel # None
+            agent.accel = sensitivity #standard is none but later used as 5
