@@ -1,6 +1,6 @@
 1 - Acceleration and velocity
 
-They are changed inside sustom class Scenario(BaseScenario) during the environmnet creation (make_world)
+They are changed inside custom class Scenario(BaseScenario) during the environmnet creation (make_world)
 
 - accel - Acceleration is used to amplify the inputs
 standard value is none but later is assigned to a variable called sensitivity initialized as 5
@@ -25,4 +25,3 @@ Right arrow moves the veicle left (The environment look like it is going towards
             |
             |
 
-3 - The simple environment was being loaded from the multiagent library and not from the envs folder
