@@ -6,6 +6,7 @@ from gym import spaces
 from envs.centralized_env import CentralizedEnvWrapper
 from envs.cont_environment import ContMultiAgentEnv
 import envs.scenarios as scenarios
+from agents.dec_ddpg_runner import DecDDPGRunner
 
 # Adapted from the multi-agent particle env to use a continuous environment
 def make_env(scenario_name, benchmark=False):
@@ -23,15 +24,15 @@ def make_env(scenario_name, benchmark=False):
 
 
 # Test Code here
-# This uses the centralized wrapper
-env = CentralizedEnvWrapper(make_env("formation_w_coll_avoidance"))
-agent = DDPGAgent(env)
-rewards, avg_rewards, info = agent.train(500)
+env = make_env("simple_formation")
+dec_agents = DecDDPGRunner(env)
+
+rewards, avg_rewards, info = dec_agents.train(1)#000)
+
 
 input("press to run trained model") # even requesting a key press, for us to be prepared to watch the model
-agent.run_episode(waittime = 0.1) # should we store the model that obtained the best reward? or always use the last one?
+dec_agents.run_episode()#waittime = 0.1) # should we store the model that obtained the best reward? or always use the last one?
 
 plt.plot(rewards)
 plt.plot(avg_rewards)
 plt.show()
-
