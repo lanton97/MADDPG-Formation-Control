@@ -89,7 +89,7 @@ class Scenario(BaseScenario):
         for other in world.agents:
             if agent != other:
                 rel_pos = (agent.state.p_pos - other.state.p_pos)
-                obs = np.concatenate([obs, rel_pos])
+                obs = np.concatenate([obs, rel_pos, agent.state.p_vel])
 
         for obst in world.landmarks:
             rel_pos = (agent.state.p_pos - obst.state.p_pos)

@@ -22,13 +22,15 @@ def make_env(scenario_name, benchmark=False):
         env = ContMultiAgentEnv(world, scenario.reset_world, scenario.reward, scenario.observation)
     return env
 
+baseline_env = CentralizedEnvWrapper(make_env("simple_formation"))
+base_agent = DDPGAgent(baseline_env)
+base_agent.train(500)
 
 # Test Code here
 env = make_env("simple_formation")
 dec_agents = DecDDPGRunner(env)
 
-rewards, avg_rewards, info = dec_agents.train(1)#000)
-
+rewards, avg_rewards, info = dec_agents.train(1000)
 
 input("press to run trained model") # even requesting a key press, for us to be prepared to watch the model
 dec_agents.run_episode()#waittime = 0.1) # should we store the model that obtained the best reward? or always use the last one?
