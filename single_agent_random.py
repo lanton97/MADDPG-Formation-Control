@@ -16,33 +16,25 @@ def make_env(scenario_name, benchmark=False):
     scenario = scenarios.load(scenario_name + ".py").Scenario()
     # create world
     world = scenario.make_world()
-    scenario.maxVelAndSensitivity(world, 0.1,1)
+    scenario.maxVelAndSensitivity(world, 0.1,0.2)
     # create multiagent environment
     if benchmark:        
         env = ContMultiAgentEnv(world, scenario.reset_world, scenario.reward, scenario.observation, scenario.benchmark_data)
     else:
-        env = ContMultiAgentEnv(world, scenario.reset_world, scenario.reward, scenario.observation, shared_viewer=False)
+        env = ContMultiAgentEnv(world, scenario.reset_world, scenario.reward, scenario.observation, shared_viewer=True)
     return env
 
 
 # Test Code here
 # This uses the centralized wrapper
 env = CentralizedEnvWrapper(make_env("simple_custom_vel"))
-agent = ddpg.DDPGAgent(env)
 
-print("Training Model")
-rewards, avg_rewards, info = agent.train(500, 500)
-
-input("Press to run trained model") # Even requesting a key press, for us to be prepared to watch the model
-agent.run_episode(500, waitTime = 0.05) # Should we store the model that obtained the best reward? or always use the last one?
-
-print('Finished!')
-
-
-print(info[-1])
-
-
-plt.plot(rewards)
-plt.plot(avg_rewards)
-plt.show()
+rewards = []
+env.reset()
+done = False
+while not done:
+    env.render()
+    state, reward, done, info = env.step([env.action_space.sample()]) # take a random action
+    rewards.append(reward)
+env.close()
 

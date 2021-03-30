@@ -61,3 +61,6 @@ class CentralizedEnvWrapper():
         for i in range(len(self.env.viewers)):
             self.env.viewers[i].close()
         self.env.close()
+    
+    def sample(self):
+        return [np.array(self.action_space.sample())]
