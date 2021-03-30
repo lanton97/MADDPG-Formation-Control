@@ -47,7 +47,9 @@ class Scenario(BaseScenario):
     # Our observation include every agents velocity and out current positions
     def observation(self, agent, world):
         rel_pos = []
+        other_vels = []
         for other in world.agents:
             if agent != other:
                 rel_pos.append(agent.state.p_pos - other.state.p_pos)
-        return np.concatenate([agent.state.p_vel, rel_pos[0], rel_pos[1]])
+                other_vels.append(agent.state.p_vel)
+        return np.concatenate([agent.state.p_vel, rel_pos[0], other_vels[0], rel_pos[1], other_vels[1]])

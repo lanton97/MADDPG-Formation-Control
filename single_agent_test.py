@@ -41,6 +41,7 @@ print('Finished!')
 
 print(info[-1])
 
+
 plt.plot(rewards)
 plt.plot(avg_rewards)
 plt.show()
