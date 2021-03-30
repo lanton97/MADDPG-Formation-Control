@@ -23,6 +23,7 @@ class ContMultiAgentEnv(MultiAgentEnv):
 
         self.discrete_action_input = False
         self.force_discrete_action = False        # configure spaces
+        self.discrete_action_space = False        # configure spaces
         self.action_space = []
         self.observation_space = []
 
