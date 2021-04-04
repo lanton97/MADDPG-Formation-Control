@@ -15,13 +15,13 @@ class MADDPGAgent():
            self,
            env,
            agent_index,
-           gamma=0.99,
-           tau=0.005,
-           critic_lr=0.0001,
-           actor_lr=0.0001,
+           gamma=0.95,
+           tau=0.01,
+           critic_lr=0.01,
+           actor_lr=0.01,
            noise_std_dev=0.02,
-           buffer_size=50000,
-           batch_size=64,
+           buffer_size=10e6,
+           batch_size=1024,
            ):
 
         self._agent_index = agent_index
@@ -88,9 +88,11 @@ class MADDPGAgent():
         with tf.GradientTape() as tape:
             target_actions = self._target_actor(local_next_state_batch, training=True)
             updated_next_actions = tf.concat([next_actions[:,:self._act_start_ind], target_actions[:], next_actions[:,self._act_start_ind + self._num_act:]], 1)
-            y = reward_batch[:,self._agent_index] + self._gamma * self._target_critic(
+            r = tf.expand_dims(reward_batch[:,self._agent_index], -1)
+            y = r + self._gamma * self._target_critic(
                 [next_state_batch, updated_next_actions], training=True
             )
+
             critic_value = self._critic_model([state_batch, action_batch], training=True)
             critic_loss = tf.math.reduce_mean(tf.math.square(y - critic_value))
 
