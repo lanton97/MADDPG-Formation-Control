@@ -83,8 +83,10 @@ class DecDDPGRunner():
                 self.env.render()
 
             actions = self.get_acts(prev_states)
+
             # Recieve state and reward from environment.
             states, rewards, dones, info = self.env.step(actions)
+            actions = np.squeeze(np.reshape(actions, (-1,1)))
             rewards = tf.cast(rewards, dtype=tf.float32)
             self.distribute_to_buffers(prev_states, actions, rewards, states, dones)
             self.update_agents()
@@ -96,6 +98,7 @@ class DecDDPGRunner():
             # End this episode when `done` is True
             if self.is_done(dones):
                 break
+
         return episodic_reward, episode_info
 
     def run_episode(self, num_steps=100, render=True, waitTime=0.1):
