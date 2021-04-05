@@ -54,3 +54,6 @@ class Scenario(BaseScenario):
         for i, agent in enumerate(world.agents):
             agent.max_speed = max_vel # None
             agent.accel = sensitivity #standard is none but later used as 5
+
+    def done(self, agent, world):
+        return False

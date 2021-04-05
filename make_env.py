@@ -25,11 +25,8 @@ def make_env(scenario_name, benchmark=False):
 
 
 # Test Code here
-env = make_env("formation_w_coll_avoidance")
-#env = make_env("simple_formation")
+env = make_env("simple_formation")
 dec_agents = MADDPGRunner(env)
-dec_agents.save_agents()
-dec_agents.load_agents()
 
 rewards, avg_rewards, info = dec_agents.train(500)
 
