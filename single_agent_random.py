@@ -9,6 +9,7 @@ import multiagent.scenarios as scenarios
 import tensorflow as tf
 import envs.scenarios as scenarios
 import imageio
+import os, datetime
 
 # Things to talk 
 # single_agent_test modifications
@@ -22,10 +23,11 @@ import imageio
 
 # Adapted from the multi-agent particle env to use a continuous environment
 def save_render(path,images):
+    print("Saving Gif!!!")
     with imageio.get_writer(path, mode='I') as writer:
         for img in images:
             writer.append_data(img)
-
+    print("Finished saving Gif")
 def make_env(scenario_name, benchmark=False):
 
     # load scenario from script
@@ -55,5 +57,10 @@ for i in range(0,200):
     rewards.append(reward)
     images.append(img[0])
 env.close()
-save_render('test.gif', images)
+
+path = "./experiments/"
+mydir = os.path.join(path, datetime.datetime.now().strftime('%Y-%m-%d_%H-%M-%S'))
+print(mydir)
+os.makedirs(mydir)
+save_render(mydir + "/test.gif", images)
 

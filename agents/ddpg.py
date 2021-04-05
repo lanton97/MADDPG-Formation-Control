@@ -50,18 +50,25 @@ class DDPGAgent():
         self._actor_best = generate_actor_network(self._num_obs, self._num_act, self._max)
         self._critic_best = generate_critic_network(self._num_obs, self._num_act)
 
+        self._actor_best_average = generate_actor_network(self._num_obs, self._num_act, self._max)
+        self._critic_best_average = generate_critic_network(self._num_obs, self._num_act)
+
         self._actor_model.summary()
 
         # Making the weights equal initially
         self._target_actor.set_weights(self._actor_model.get_weights())
         self._target_critic.set_weights(self._critic_model.get_weights())
 
-    def policy(self, state, noise_object, best = False):
-        if(best):
+    def policy(self, state, noise_object, policy_param = 'last'):
+        if(policy_param == 'last'):
+            sampled_actions = tf.squeeze(self._actor_model(state))
+        elif(policy_param == 'best_overall'):
             sampled_actions = tf.squeeze(self._actor_best(state))
+        elif(policy_param == 'best_average'):
+            sampled_actions = tf.squeeze(self._actor_best_average(state))
         else:
             sampled_actions = tf.squeeze(self._actor_model(state))
-
+            
         noise = noise_object()
         # Adding noise to action
         sampled_actions = sampled_actions.numpy() + noise
@@ -121,19 +128,31 @@ class DDPGAgent():
         avg_reward_list = []
         info_buffer = []
         best_reward = -1e6
+        best_reward_avg = -1e6
+        avg_reward = -1e6
+
         with tqdm.trange(num_episodes) as t:
             for i in t:
                 episodic_reward, info = self.train_episode(num_steps)
-                # Save best model
+                # Save best model overall
                 if(episodic_reward > best_reward):
                     self._actor_best.set_weights(self._actor_model.get_weights())
                     self._critic_best.set_weights(self._critic_model.get_weights())
                     best_reward = episodic_reward
                     print('\r\nUpdating best model! best_reward = {}\r\n'.format(best_reward))
+
                 ep_reward_list.append(episodic_reward)
                 # Mean of last 40 episodes
                 avg_reward = np.mean(ep_reward_list[-40:])
                 #print("Episode * {} * Avg Reward is ==> {}".format(ep, avg_reward))
+
+                # Save best model on average
+                if(avg_reward > best_reward_avg):
+                    self._actor_best_average.set_weights(self._actor_model.get_weights())
+                    self._critic_best_average.set_weights(self._critic_model.get_weights())
+                    best_reward_avg = avg_reward
+                    print('\r\nUpdating best model average! best_reward_avg = {}\r\n'.format(best_reward_avg))
+
                 t.set_description(f'Episode {i}')
                 episodic_reward_str = "⠀{:6.0f}".format(episodic_reward) #Extra spacing was ignored. So I added an invisible character right before
                 avg_reward_str = "⠀{:6.0f}".format(avg_reward)
@@ -177,20 +196,22 @@ class DDPGAgent():
 
         return episodic_reward, episode_info
     
-    def run_episode(self, num_steps=100, render=True, waitTime=0.1, best=False):
+    def run_episode(self, num_steps=100, render=True, waitTime=0, policy_param='last', mode='human'):
         prev_state = self._env.reset()
         prev_state = prev_state
         episodic_reward = 0
         episode_info = []
-
+        states = []
+        images = []
         for i in range(num_steps):
             #print("Step {}".format(i))
             if render:
-                self._env.render()
+                img = self._env.render(mode)
+                images.append(img[0])
             tf_prev_state = tf.expand_dims(tf.convert_to_tensor(prev_state), 0)
             def zero_noise(): # Workaround until we have a better way to call the policy without noise
                 return 0
-            action = self.policy(tf_prev_state, zero_noise, best) # TODO: Change how we pass noise
+            action = self.policy(tf_prev_state, zero_noise, policy_param) # TODO: Change how we pass noise
             # Recieve state and reward from environment.
             state, reward, done, info = self._env.step(action)
             reward = tf.cast(reward, dtype=tf.float32)
@@ -202,8 +223,8 @@ class DDPGAgent():
             prev_state = state
             time.sleep(waitTime)
             episode_info.append(info)
-
-        return episodic_reward, episode_info
+            states.append(state)
+        return states, episodic_reward, episode_info, images
 
 
     
