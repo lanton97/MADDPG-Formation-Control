@@ -57,11 +57,14 @@ class Scenario(BaseScenario):
         return cost
 
     def is_collision(self, agent, world):
-        for a,entity_a in enumerate(world.entities):
-           [f_a, f_b] = world.get_collision_force(entity_a, agent)
-           if(f_a is not None or f_b is not None):
-               return True
-
+        for entity in world.entities:
+            # compute actual distance between entities
+            delta_pos = entity.state.p_pos - agent.state.p_pos
+            dist = np.sqrt(np.sum(np.square(delta_pos)))
+            # minimum allowable distance
+            dist_min = entity.size + agent.size
+            if dist < dist_min and entity != agent:
+                return True
         return False
 
     def reward(self, agent, world):
@@ -83,7 +86,7 @@ class Scenario(BaseScenario):
         total_cost -= np.sum(abs(agent.state.p_vel))
         return total_cost
 
-    # Our observation include every agents velocity and out current positions
+    # Our observation include every agents velocity and our current positions
     def observation(self, agent, world):
         obs = agent.state.p_vel
         for other in world.agents:
