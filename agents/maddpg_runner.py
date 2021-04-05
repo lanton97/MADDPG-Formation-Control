@@ -118,6 +118,8 @@ class MADDPGRunner():
             if self.is_done(dones):
                 break
 
+        print(prev_states[-1][-2:])
+
         return episodic_reward, episode_info
 
     def run_episode(self, num_steps=100, render=True, waitTime=0.1):
@@ -146,3 +148,10 @@ class MADDPGRunner():
 
         return episodic_reward, episode_info
 
+    def save_agents(self, suffix=""):
+        for i, agent in enumerate(self.agents):
+            agent.save_models(suffix=(suffix + str(i)))
+
+    def load_agents(self, suffix=""):
+        for i, agent in enumerate(self.agents):
+            agent.load_models(suffix=(suffix + str(i)))

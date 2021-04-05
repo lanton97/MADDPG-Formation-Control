@@ -127,3 +127,14 @@ class MADDPGAgent():
         self.update_target(self._target_actor.variables, self._actor_model.variables)
         self.update_target(self._target_critic.variables, self._critic_model.variables)
 
+    def save_models(self, suffix=""):
+        self._actor_model.save_weights("./weights/maddpg" + suffix + "/actor")
+        self._critic_model.save_weights("./weights/maddpg" + suffix + "/critic")
+        self._target_actor.save_weights("./weights/maddpg" + suffix + "/target_actor")
+        self._target_critic.save_weights("./weights/maddpg" + suffix + "/target_critic")
+  
+    def load_models(self, suffix=""):
+        self._actor_model.load_weights("./weights/maddpg" + suffix + "/actor")
+        self._critic_model.load_weights("./weights/maddpg" + suffix + "/critic")
+        self._target_actor.load_weights("./weights/maddpg" + suffix + "/target_actor")
+        self._target_critic.load_weights("./weights/maddpg" + suffix + "/target_critic")

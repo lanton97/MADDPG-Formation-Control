@@ -127,3 +127,10 @@ class DecDDPGRunner():
 
         return episodic_reward, episode_info
 
+    def save_agents(self, suffix=""):
+        for i, agent in enumerate(self.agents):
+            agent.save_models(suffix=(suffix + str(i)))
+
+    def save_agents(self, suffix=""):
+        for i, agent in enumerate(self.agents):
+            agent.load_models(suffix=(suffix + str(i)))
