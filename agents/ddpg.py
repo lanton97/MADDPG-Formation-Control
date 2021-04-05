@@ -11,6 +11,8 @@ from agents.util import *
 import tqdm
 import time
 
+
+
 class DDPGAgent():
     def  __init__(
            self,
@@ -45,14 +47,21 @@ class DDPGAgent():
         self._target_actor = generate_actor_network(self._num_obs, self._num_act, self._max)
         self._target_critic = generate_critic_network(self._num_obs, self._num_act)
 
+        self._actor_best = generate_actor_network(self._num_obs, self._num_act, self._max)
+        self._critic_best = generate_critic_network(self._num_obs, self._num_act)
+
         self._actor_model.summary()
 
         # Making the weights equal initially
         self._target_actor.set_weights(self._actor_model.get_weights())
         self._target_critic.set_weights(self._critic_model.get_weights())
 
-    def policy(self, state, noise_object):
-        sampled_actions = tf.squeeze(self._actor_model(state))
+    def policy(self, state, noise_object, best = False):
+        if(best):
+            sampled_actions = tf.squeeze(self._actor_best(state))
+        else:
+            sampled_actions = tf.squeeze(self._actor_model(state))
+
         noise = noise_object()
         # Adding noise to action
         sampled_actions = sampled_actions.numpy() + noise
@@ -111,10 +120,16 @@ class DDPGAgent():
         ep_reward_list =[]
         avg_reward_list = []
         info_buffer = []
- 
+        best_reward = -1e6
         with tqdm.trange(num_episodes) as t:
             for i in t:
                 episodic_reward, info = self.train_episode(num_steps)
+                # Save best model
+                if(episodic_reward > best_reward):
+                    self._actor_best.set_weights(self._actor_model.get_weights())
+                    self._critic_best.set_weights(self._critic_model.get_weights())
+                    best_reward = episodic_reward
+                    print('\r\nUpdating best model! best_reward = {}\r\n'.format(best_reward))
                 ep_reward_list.append(episodic_reward)
                 # Mean of last 40 episodes
                 avg_reward = np.mean(ep_reward_list[-40:])
@@ -162,20 +177,20 @@ class DDPGAgent():
 
         return episodic_reward, episode_info
     
-    def run_episode(self, num_steps=100, render=True, waitTime=0.1):
+    def run_episode(self, num_steps=100, render=True, waitTime=0.1, best=False):
         prev_state = self._env.reset()
         prev_state = prev_state
         episodic_reward = 0
         episode_info = []
 
         for i in range(num_steps):
-            print("Step {}".format(i))
+            #print("Step {}".format(i))
             if render:
                 self._env.render()
             tf_prev_state = tf.expand_dims(tf.convert_to_tensor(prev_state), 0)
             def zero_noise(): # Workaround until we have a better way to call the policy without noise
                 return 0
-            action = self.policy(tf_prev_state, zero_noise) # TODO: Change how we pass noise
+            action = self.policy(tf_prev_state, zero_noise, best) # TODO: Change how we pass noise
             # Recieve state and reward from environment.
             state, reward, done, info = self._env.step(action)
             reward = tf.cast(reward, dtype=tf.float32)
@@ -191,4 +206,4 @@ class DDPGAgent():
         return episodic_reward, episode_info
 
 
-        
+    
