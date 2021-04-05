@@ -54,8 +54,9 @@ class CentralizedEnvWrapper():
 
         return state, reward, done, info
         
-    def render(self):
-        self.env.render()
+    def render(self, mode='human'):
+        results = self.env.render(mode)
+        return results
 
     def close(self):
         for i in range(len(self.env.viewers)):
