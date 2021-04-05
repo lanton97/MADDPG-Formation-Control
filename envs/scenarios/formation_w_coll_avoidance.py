@@ -36,18 +36,23 @@ class Scenario(BaseScenario):
         # Set a random goal position
         self.goal_pos = np.random.uniform(-1, +1, world.dim_p)
 
-        # random properties for agents
-        for i, agent in enumerate(world.agents):
-            agent.color = np.array([0.25,0.25,0.25])
+        for i, landmark in enumerate(world.landmarks):
+            landmark.state.p_pos = np.random.uniform(-1, +1, world.dim_p)
+            landmark.state.p_vel = np.zeros(world.dim_p)
+
         # set random initial states
         for agent in world.agents:
+            agent.color = np.array([0.25,0.25,0.25])
             agent.state.p_pos = np.random.uniform(-1,+1, world.dim_p)
             agent.state.p_vel = np.zeros(world.dim_p)
             agent.state.c = np.zeros(world.dim_c)
 
-        for i, landmark in enumerate(world.landmarks):
-            landmark.state.p_pos = np.random.uniform(-1, +1, world.dim_p)
-            landmark.state.p_vel = np.zeros(world.dim_p)
+        # After we set all the inital agent and landmark positions, 
+        # make sure we aren't in any collisions already
+        for agent in world.agents:
+            while(self.is_collision(agent, world)):
+                agent.state.p_pos = np.random.uniform(-1,+1, world.dim_p)
+
 
     def rel_pos_cost(self, pos1, pos2):
         # Distance is the l1 Norm
