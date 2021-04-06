@@ -14,7 +14,7 @@ def make_env(scenario_name, benchmark=False):
     if benchmark:        
         env = ContMultiAgentEnv(world, scenario.reset_world, scenario.reward, scenario.observation, scenario.benchmark_data)
     else:
-        env = ContMultiAgentEnv(world, scenario.reset_world, scenario.reward, scenario.observation, shared_viewer=False)
+        env = ContMultiAgentEnv(world, scenario.reset_world, scenario.reward, scenario.observation, done_callback=scenario.done, shared_viewer=True)
     return env
 
 def generate_path(dir):
