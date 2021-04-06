@@ -1,16 +1,30 @@
-from agents import ddpg
+from agents import dec_ddpg_runner
 from envs.centralized_env import CentralizedEnvWrapper
-import multiagent.scenarios as scenarios
 from train_and_test.util import *
+import argparse
 
-# Start Experiment
-# Experiment path
-dir = generate_path("./experiments/single_particle/")
 
-env = CentralizedEnvWrapper(make_env("simple_custom_vel"))
-agent = ddpg.DDPGAgent(env)
+parser = argparse.ArgumentParser(description='File to run experiments for som scenario with a centralized agent.')
+parser.add_argument('--agent', dest='agent', default='decddpg',
+        help='Name of the agent types: Valid values are \'decddpg\' and \'maddpg\'')
+parser.add_argument('--scenario', dest='scenario_name', default='simple_formation',
+                    help='Name of the scenario we want to run')
 
-num_episodes = 1000
+args = parser.parse_args()
+
+agent = None
+dir = generate_path("./experiments/" + args.agent + "/" + args.scenario_name + "")
+
+env = make_env(args.scenario_name)
+
+if args.agent == "decddpg":
+    agent = dec_ddpg_runner.DecDDPGRunner(env)
+elif args.agent == "maddpg":
+    agent = maddpg_runner.MADDPGRunner(env)
+else:
+    raise Exception("Please provide valid agent type")
+
+num_episodes = 1
 num_steps = 300
 
 print("Training Model")
