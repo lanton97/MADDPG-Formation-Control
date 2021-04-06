@@ -42,8 +42,6 @@ class DecDDPGAgent():
         self._target_actor = generate_actor_network(self._num_obs, self._num_act, self._max)
         self._target_critic = generate_critic_network(self._num_obs, self._num_act)
 
-        self._actor_model.summary()
-
         # Making the weights equal initially
         self._target_actor.set_weights(self._actor_model.get_weights())
         self._target_critic.set_weights(self._critic_model.get_weights())
@@ -57,7 +55,7 @@ class DecDDPGAgent():
         # We make sure action is within bounds
         legal_action = np.clip(sampled_actions, self._min, self._max)
 
-        return np.squeeze(legal_action)
+        return [np.squeeze(legal_action)]
 
     def non_exploring_policy(self, state):
         sampled_actions = tf.squeeze(self._actor_model(state))
@@ -120,3 +118,14 @@ class DecDDPGAgent():
         self.update_target(self._target_actor.variables, self._actor_model.variables)
         self.update_target(self._target_critic.variables, self._critic_model.variables)
 
+    def save_models(self, suffix=""):
+        self._actor_model.save_weights("./weights/dec-ddpg" + suffix + "/actor")
+        self._critic_model.save_weights("./weights/dec-ddpg" + suffix + "/critic")
+        self._target_actor.save_weights("./weights/dec-ddpg" + suffix + "/target_actor")
+        self._target_critic.save_weights("./weights/dec-ddpg" + suffix + "/target_critic")
+    
+    def load_models(self, suffix=""):
+        self._actor_model.load_weights("./weights/dec-ddpg" + suffix + "/actor")
+        self._critic_model.load_weights("./weights/dec-ddpg" + suffix + "/critic")
+        self._target_actor.load_weights("./weights/dec-ddpg" + suffix + "/target_actor")
+        self._target_critic.load_weights("./weights/dec-ddpg" + suffix + "/target_critic")

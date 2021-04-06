@@ -36,18 +36,23 @@ class Scenario(BaseScenario):
         # Set a random goal position
         self.goal_pos = np.random.uniform(-1, +1, world.dim_p)
 
-        # random properties for agents
-        for i, agent in enumerate(world.agents):
-            agent.color = np.array([0.25,0.25,0.25])
+        for i, landmark in enumerate(world.landmarks):
+            landmark.state.p_pos = np.random.uniform(-1, +1, world.dim_p)
+            landmark.state.p_vel = np.zeros(world.dim_p)
+
         # set random initial states
         for agent in world.agents:
+            agent.color = np.array([0.25,0.25,0.25])
             agent.state.p_pos = np.random.uniform(-1,+1, world.dim_p)
             agent.state.p_vel = np.zeros(world.dim_p)
             agent.state.c = np.zeros(world.dim_c)
 
-        for i, landmark in enumerate(world.landmarks):
-            landmark.state.p_pos = np.random.uniform(-1, +1, world.dim_p)
-            landmark.state.p_vel = np.zeros(world.dim_p)
+        # After we set all the inital agent and landmark positions, 
+        # make sure we aren't in any collisions already
+        for agent in world.agents:
+            while(self.is_collision(agent, world)):
+                agent.state.p_pos = np.random.uniform(-1,+1, world.dim_p)
+
 
     def rel_pos_cost(self, pos1, pos2):
         # Distance is the l1 Norm
@@ -57,11 +62,14 @@ class Scenario(BaseScenario):
         return cost
 
     def is_collision(self, agent, world):
-        for a,entity_a in enumerate(world.entities):
-           [f_a, f_b] = world.get_collision_force(entity_a, agent)
-           if(f_a is not None or f_b is not None):
-               return True
-
+        for entity in world.entities:
+            # compute actual distance between entities
+            delta_pos = entity.state.p_pos - agent.state.p_pos
+            dist = np.sqrt(np.sum(np.square(delta_pos)))
+            # minimum allowable distance
+            dist_min = entity.size + agent.size
+            if dist < dist_min and entity != agent:
+                return True
         return False
 
     def reward(self, agent, world):
@@ -83,13 +91,13 @@ class Scenario(BaseScenario):
         total_cost -= np.sum(abs(agent.state.p_vel))
         return total_cost
 
-    # Our observation include every agents velocity and out current positions
+    # Our observation include every agents velocity and our current positions
     def observation(self, agent, world):
         obs = agent.state.p_vel
         for other in world.agents:
             if agent != other:
                 rel_pos = (agent.state.p_pos - other.state.p_pos)
-                obs = np.concatenate([obs, rel_pos, agent.state.p_vel])
+                obs = np.concatenate([obs, rel_pos, other.state.p_vel])
 
         for obst in world.landmarks:
             rel_pos = (agent.state.p_pos - obst.state.p_pos)

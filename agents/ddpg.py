@@ -226,5 +226,16 @@ class DDPGAgent():
             states.append(state)
         return states, episodic_reward, episode_info, images
 
+    def save_models(self, suffix=""):
+        self._actor_model.save_weights("./weights/ddpg" + suffix + "/actor")
+        self._critic_model.save_weights("./weights/ddpg" + suffix + "/critic")
+        self._target_actor.save_weights("./weights/ddpg" + suffix + "/target_actor")
+        self._target_critic.save_weights("./weights/ddpg" + suffix + "/target_critic")
+
+    def load_models(self, suffix=""):
+        self._actor_model.load_weights("./weights/ddpg" + suffix + "/actor")
+        self._critic_model.load_weights("./weights/ddpg" + suffix + "/critic")
+        self._target_actor.load_weights("./weights/ddpg" + suffix + "/target_actor")
+        self._target_critic.load_weights("./weights/ddpg" + suffix + "/target_critic")
 
     
