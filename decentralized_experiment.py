@@ -1,5 +1,5 @@
 from agents import dec_ddpg_runner
-from envs.centralized_env import CentralizedEnvWrapper
+from agents import maddpg_runner
 from train_and_test.util import *
 import argparse
 
@@ -31,8 +31,8 @@ print("Training Model")
 rewards, avg_rewards, info = agent.train(num_episodes=num_episodes, num_steps=num_steps)
 
 input("Press to run trained model") # Even requesting a key press, for us to be prepared to watch the model
-states_last_1, episodic_reward_last_1, info_last_1, images_last_1 = agent.run_episode(num_steps, waitTime = 0,mode='rgb_array') # Should we store the model that obtained the best reward? or always use the last one?
-states_last_2, episodic_reward_last_2, info_last_2, images_last_2 = agent.run_episode(num_steps, waitTime = 0,mode='rgb_array')  # Should we store the model that obtained the best reward? or always use the last one?
+states_last_1, episodic_reward_last_1, info_last_1, images_last_1 = agent.run_episode(num_steps, waitTime = 0.0, mode='rgb_array') # Should we store the model that obtained the best reward? or always use the last one?
+states_last_2, episodic_reward_last_2, info_last_2, images_last_2 = agent.run_episode(num_steps, waitTime = 0.0, mode='rgb_array')  # Should we store the model that obtained the best reward? or always use the last one?
 states_overall_1, episodic_reward_overall_1, info_last_overall_1, images_overall_1 = agent.run_episode(num_steps, waitTime = 0, mode='rgb_array', policy_param='best_overall') # Should we store the model that obtained the best reward? or always use the last one?
 states_overall_2, episodic_reward_overall_2, info_last_overall_2, images_overall_2 = agent.run_episode(num_steps, waitTime = 0, mode='rgb_array', policy_param='best_overall') # Should we store the model that obtained the best reward? or always use the last one?
 states_average_1, episodic_reward_average_1, info_last_average_1, images_average_1 = agent.run_episode(num_steps, waitTime = 0, mode='rgb_array', policy_param='best_average') # Should we store the model that obtained the best reward? or always use the last one?
