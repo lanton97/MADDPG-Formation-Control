@@ -32,6 +32,8 @@ dec_agents = DecDDPGRunner(env)
 
 rewards, avg_rewards, info = dec_agents.train(1000)
 
+dec_agents.save_agents(suffix='formation')
+
 input("press to run trained model") # even requesting a key press, for us to be prepared to watch the model
 dec_agents.run_episode()#waittime = 0.1) # should we store the model that obtained the best reward? or always use the last one?
 

@@ -34,11 +34,12 @@ class Scenario(BaseScenario):
             landmark.index = i
 
         # Set a random goal position
-        self.goal_pos = np.random.uniform(-1, +1, world.dim_p)
+        self.goal_pos = np.random.uniform(-3, +3, world.dim_p)
 
         # random properties for agents
         for i, agent in enumerate(world.agents):
             agent.color = np.array([0.25,0.25,0.25])
+
         # set random initial states
         for agent in world.agents:
             agent.state.p_pos = np.random.uniform(-1,+1, world.dim_p)
@@ -71,13 +72,13 @@ class Scenario(BaseScenario):
             if agent != other:
                 total_cost += self.rel_pos_cost(agent.state.p_pos, other.state.p_pos)
 
-        # Squared distance for cost from goal pos
-        dist_from_goal = np.square(np.linalg.norm(agent.state.p_pos - self.goal_pos))
+        # distance for cost from goal pos
+        dist_from_goal = np.linalg.norm(agent.state.p_pos - self.goal_pos)
 
         total_cost -= dist_from_goal
 
         # Chosen kind of arbitrarily, collision cost
-        total_cost -= 2000.0 if self.is_collision(agent, world) else 0.0
+        total_cost -= 500.0 if self.is_collision(agent, world) else 0.0
 
         # Add a cost for movement
         total_cost -= np.sum(abs(agent.state.p_vel))
