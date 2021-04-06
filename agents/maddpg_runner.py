@@ -122,15 +122,18 @@ class MADDPGRunner():
 
         return episodic_reward, episode_info
 
-    def run_episode(self, num_steps=100, render=True, waitTime=0.1):
+    def run_episode(self, num_steps=100, render=True, waitTime=0.1, policy_param='last', mode='human'):
         prev_states = self.env.reset()
         episodic_reward = 0
         episode_info = []
+        states = []
+        images = []
 
         for i in range(num_steps):
             print("Step {}".format(i))
             if render:
-                self.env.render()
+                img = self.env.render()
+                images.append(img[0])
             prev_states = self.split_obs(tf.reshape(prev_states, (1, -1)))
             actions = self.get_non_exploring_acts(prev_states)
 
@@ -146,7 +149,7 @@ class MADDPGRunner():
             time.sleep(waitTime)
             episode_info.append(info)
 
-        return episodic_reward, episode_info
+        return states, episodic_reward, episode_info, images
 
     def save_agents(self, suffix=""):
         for i, agent in enumerate(self.agents):

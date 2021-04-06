@@ -9,6 +9,8 @@ class Scenario(BaseScenario):
         world.agents = [Agent() for i in range(1)]
         for i, agent in enumerate(world.agents):
             agent.name = 'agent %d' % i
+            agent.max_speed = 1.0 # None
+            agent.accel = 0.5#standard is none but later used as 5
             agent.collide = False
             agent.silent = True
         # add landmarks
@@ -48,12 +50,6 @@ class Scenario(BaseScenario):
         for entity in world.landmarks:
             entity_pos.append(entity.state.p_pos - agent.state.p_pos)
         return np.concatenate([agent.state.p_vel] + entity_pos)
-
-
-    def maxVelAndSensitivity(self, world, max_vel, sensitivity):
-        for i, agent in enumerate(world.agents):
-            agent.max_speed = max_vel # None
-            agent.accel = sensitivity #standard is none but later used as 5
 
     def done(self, agent, world):
         return False

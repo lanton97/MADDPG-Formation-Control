@@ -127,19 +127,18 @@ class DDPGAgent():
         ep_reward_list =[]
         avg_reward_list = []
         info_buffer = []
-        best_reward = -1e6
-        best_reward_avg = -1e6
-        avg_reward = -1e6
+        best_reward = None
+        best_reward_avg = None
 
         with tqdm.trange(num_episodes) as t:
             for i in t:
                 episodic_reward, info = self.train_episode(num_steps)
                 # Save best model overall
-                if(episodic_reward > best_reward):
+                if(best_reward == None or episodic_reward > best_reward):
                     self._actor_best.set_weights(self._actor_model.get_weights())
                     self._critic_best.set_weights(self._critic_model.get_weights())
                     best_reward = episodic_reward
-                    print('\r\nUpdating best model! best_reward = {}\r\n'.format(best_reward))
+                    #print('\r\nUpdating best model! best_reward = {}\r\n'.format(best_reward))
 
                 ep_reward_list.append(episodic_reward)
                 # Mean of last 40 episodes
@@ -147,11 +146,11 @@ class DDPGAgent():
                 #print("Episode * {} * Avg Reward is ==> {}".format(ep, avg_reward))
 
                 # Save best model on average
-                if(avg_reward > best_reward_avg):
+                if(i >= 40 and (best_reward_avg == None or avg_reward > best_reward_avg)):
                     self._actor_best_average.set_weights(self._actor_model.get_weights())
                     self._critic_best_average.set_weights(self._critic_model.get_weights())
                     best_reward_avg = avg_reward
-                    print('\r\nUpdating best model average! best_reward_avg = {}\r\n'.format(best_reward_avg))
+                    #print('\r\nUpdating best model average! best_reward_avg = {}\r\n'.format(best_reward_avg))
 
                 t.set_description(f'Episode {i}')
                 episodic_reward_str = "⠀{:6.0f}".format(episodic_reward) #Extra spacing was ignored. So I added an invisible character right before
