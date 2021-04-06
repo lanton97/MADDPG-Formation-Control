@@ -10,7 +10,6 @@ def make_env(scenario_name, benchmark=False):
     scenario = scenarios.load(scenario_name + ".py").Scenario()
     # create world
     world = scenario.make_world()
-    scenario.maxVelAndSensitivity(world, 1,0.5)
     # create multiagent environment
     if benchmark:        
         env = ContMultiAgentEnv(world, scenario.reset_world, scenario.reward, scenario.observation, scenario.benchmark_data)
