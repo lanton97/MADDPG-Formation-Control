@@ -7,7 +7,7 @@ import tensorflow as tf
 
 class ReplayBuffer(object):
 
-    def __init__(self, num_states, num_actions, buffer_capacity=100000):
+    def __init__(self, num_states, num_actions, num_agents=1, buffer_capacity=100000):
         # number of "experiences" to store at max
         self.buffer_capacity = buffer_capacity
 
@@ -18,9 +18,9 @@ class ReplayBuffer(object):
         # we use different np.arrays for each tuple element
         self.state_buffer = np.zeros((self.buffer_capacity, num_states))
         self.action_buffer = np.zeros((self.buffer_capacity, num_actions))
-        self.reward_buffer = np.zeros((self.buffer_capacity, 1))
+        self.reward_buffer = np.zeros((self.buffer_capacity, num_agents))
         self.next_state_buffer = np.zeros((self.buffer_capacity, num_states))
-        self.done_buffer = np.zeros((self.buffer_capacity, 1))
+        self.done_buffer = np.zeros((self.buffer_capacity, num_agents))
 
     # takes (s,a,r,s') obervation tuple as input
     def add(self, obs_tuple):

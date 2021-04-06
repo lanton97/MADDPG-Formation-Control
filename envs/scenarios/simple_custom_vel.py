@@ -51,3 +51,5 @@ class Scenario(BaseScenario):
             entity_pos.append(entity.state.p_pos - agent.state.p_pos)
         return np.concatenate([agent.state.p_vel] + entity_pos)
 
+    def done(self, agent, world):
+        return False
