@@ -38,7 +38,7 @@ class MADDPGAgent():
         self._actor_opt = tf.keras.optimizers.Adam(actor_lr)
         self._critic_opt = tf.keras.optimizers.Adam(critic_lr)
 
-        self._noise = OUNoise(mean=np.zeros(1), std_dev=float(noise_std_dev) * np.ones(1))
+        self._noise = OUNoise(mean=np.zeros(self._num_act), std_dev=float(noise_std_dev) * np.ones(self._num_act))
         self._actor_model = generate_actor_network(self._num_obs, self._num_act, self._max)
 
         # Iterate through the environment spaces to figure out the total action and obs dimensionality
@@ -61,8 +61,22 @@ class MADDPGAgent():
         self._target_actor.set_weights(self._actor_model.get_weights())
         self._target_critic.set_weights(self._critic_model.get_weights())
 
-    def policy(self, state):
-        sampled_actions = tf.squeeze(self._actor_model(state))
+        self._actor_best = generate_actor_network(self._num_obs, self._num_act, self._max)
+        self._critic_best = generate_critic_network(self._total_obs_size, self._total_act_size)
+
+        self._actor_best_average = generate_actor_network(self._num_obs, self._num_act, self._max)
+        self._critic_best_average = generate_critic_network(self._total_obs_size, self._total_act_size)
+
+    def policy(self, state, policy_param = 'last'):
+        sampled_actions = None
+        if(policy_param == 'last'):
+            sampled_actions = tf.squeeze(self._actor_model(state))
+        elif(policy_param == 'best_overall'):
+            sampled_actions = tf.squeeze(self._actor_best(state))
+        elif(policy_param == 'best_average'):
+            sampled_actions = tf.squeeze(self._actor_best_average(state))
+        else:
+            sampled_actions = tf.squeeze(self._actor_model(state))
         noise = self._noise()
         # Adding noise to action
         sampled_actions = sampled_actions.numpy() + noise
@@ -72,8 +86,16 @@ class MADDPGAgent():
 
         return [np.squeeze(legal_action)]
 
-    def non_exploring_policy(self, state):
-        sampled_actions = tf.squeeze(self._actor_model(state))
+    def non_exploring_policy(self, state, policy_param = 'last'):
+        sampled_actions = None
+        if(policy_param == 'last'):
+            sampled_actions = tf.squeeze(self._actor_model(state))
+        elif(policy_param == 'best_overall'):
+            sampled_actions = tf.squeeze(self._actor_best(state))
+        elif(policy_param == 'best_average'):
+            sampled_actions = tf.squeeze(self._actor_best_average(state))
+        else:
+            sampled_actions = tf.squeeze(self._actor_model(state))
 
         # We make sure action is within bounds
         legal_action = np.clip(sampled_actions, self._min, self._max)
@@ -127,11 +149,37 @@ class MADDPGAgent():
         self.update_target(self._target_actor.variables, self._actor_model.variables)
         self.update_target(self._target_critic.variables, self._critic_model.variables)
 
-    def save_models(self, suffix=""):
-        self._actor_model.save_weights("./weights/maddpg" + suffix + "/actor")
-        self._critic_model.save_weights("./weights/maddpg" + suffix + "/critic")
-        self._target_actor.save_weights("./weights/maddpg" + suffix + "/target_actor")
-        self._target_critic.save_weights("./weights/maddpg" + suffix + "/target_critic")
+    def cache_best_average(self):
+        self._actor_best_average.set_weights(self._actor_model.get_weights())
+        self._critic_best_average.set_weights(self._critic_model.get_weights())
+
+
+    def cache_best_single(self):
+        self._actor_best.set_weights(self._actor_model.get_weights())
+        self._critic_best.set_weights(self._critic_model.get_weights())
+
+    def save_models(self, suffix="", policy_param="best_average"):
+        if(policy_param == 'last'):
+            self._actor_model.save_weights("./weights/maddpg" + suffix + "/actor")
+            self._critic_model.save_weights("./weights/maddpg" + suffix + "/critic")
+            self._target_actor.save_weights("./weights/maddpg" + suffix + "/target_actor")
+            self._target_critic.save_weights("./weights/maddpg" + suffix + "/target_critic")
+        elif(policy_param == 'best_overall'):
+            self._actor_best.save_weights("./weights/maddpg" + suffix + "/actor")
+            self._critic_best.save_weights("./weights/maddpg" + suffix + "/critic")
+            self._target_actor.save_weights("./weights/maddpg" + suffix + "/target_actor")
+            self._target_critic.save_weights("./weights/maddpg" + suffix + "/target_critic")
+        elif(policy_param == 'best_average'):
+            self._actor_best_average.save_weights("./weights/maddpg" + suffix + "/actor")
+            self._critic_best_average.save_weights("./weights/maddpg" + suffix + "/critic")
+            self._target_actor.save_weights("./weights/maddpg" + suffix + "/target_actor")
+            self._target_critic.save_weights("./weights/maddpg" + suffix + "/target_critic")
+        else:
+            self._actor_model.save_weights("./weights/maddpg" + suffix + "/actor")
+            self._critic_model.save_weights("./weights/maddpg" + suffix + "/critic")
+            self._target_actor.save_weights("./weights/maddpg" + suffix + "/target_actor")
+            self._target_critic.save_weights("./weights/maddpg" + suffix + "/target_critic")
+
   
     def load_models(self, suffix=""):
         self._actor_model.load_weights("./weights/maddpg" + suffix + "/actor")
