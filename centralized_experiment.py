@@ -6,15 +6,15 @@ import argparse
 parser = argparse.ArgumentParser(description='File to run experiments for som scenario with a centralized agent.')
 parser.add_argument('--scenario', dest='scenario_name', default='simple_formation',
                     help='Name of the scenario we want to run')
-parser.add_argument('--num_eps', dest='num_eps', default=1000,
+parser.add_argument('--num_eps', dest='num_eps', default=10,
                     help='Number of episodes to train for.', type=int)
 parser.add_argument('--save_gifs', dest='gif', default='True',
                     help='True to save gifs, anything else not to.')
 parser.add_argument('--save_models', dest='save_model', default='False',
                     help='True to save models, anything not to.')
-parser.add_argument('--load_models', dest='load_model', default='False',
+parser.add_argument('--load_models', dest='load_model', default='True',
                     help='True to load models, anything else not to.')
-parser.add_argument('--train', dest='train', default='True',
+parser.add_argument('--train', dest='train', default='False',
                     help='True to train models, anything else not to.')
 parser.add_argument('--save_suffix', dest='save_suffix', default="",
                     help='Suffix for saving the file')
@@ -54,14 +54,15 @@ states_average_2, episodic_reward_average_2, info_last_average_2, images_average
 env.close()
 
 if args.gif=='True':
-    save_render(dir + "/images_last_1.gif", images_last_1)
-    save_render(dir + "/images_last_2.gif", images_last_2)
-    save_render(dir + "/images_overall_1.gif", images_overall_1)
-    save_render(dir + "/images_overall_2.gif", images_overall_2)
-    save_render(dir + "/images_average_1.gif", images_average_1)
-    save_render(dir + "/images_average_2.gif", images_average_2)
+    save_render(dir + "/images_last_1.gif", images_last_1[::2])
+    save_render(dir + "/images_last_2.gif", images_last_2[::2])
+    save_render(dir + "/images_overall_1.gif", images_overall_1[::2])
+    save_render(dir + "/images_overall_2.gif", images_overall_2[::2])
+    save_render(dir + "/images_average_1.gif", images_average_1[::2])
+    save_render(dir + "/images_average_2.gif", images_average_2[::2])
 
-plot_train_data(rewards, avg_rewards, path=dir+'train_data.png')
+if args.train=='True':
+    plot_train_data(rewards, avg_rewards, path=dir+'train_data.png')
 
 # TODO: write the episodic reward somewhere?
 plot_episode_data(states_last_1, path=dir+'states_last_1.png')

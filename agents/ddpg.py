@@ -10,7 +10,7 @@ from agents.nets.critic_network import generate_critic_network
 from agents.util import * 
 import tqdm
 import time
-
+import os
 
 
 class DDPGAgent():
@@ -226,10 +226,12 @@ class DDPGAgent():
         return states, episodic_reward, episode_info, images
 
     def save_models(self, suffix=""):
-        self._actor_model.save_weights("./weights/ddpg" + suffix + "/actor")
-        self._critic_model.save_weights("./weights/ddpg" + suffix + "/critic")
-        self._target_actor.save_weights("./weights/ddpg" + suffix + "/target_actor")
-        self._target_critic.save_weights("./weights/ddpg" + suffix + "/target_critic")
+        dir = "./weights/ddpg" + suffix
+        #os.makedirs(dir)
+        self._actor_model.save_weights(dir + "/actor")
+        self._critic_model.save_weights(dir + "/critic")
+        self._target_actor.save_weights(dir + "/target_actor")
+        self._target_critic.save_weights(dir + "/target_critic")
 
     def load_models(self, suffix=""):
         self._actor_model.load_weights("./weights/ddpg" + suffix + "/actor")
