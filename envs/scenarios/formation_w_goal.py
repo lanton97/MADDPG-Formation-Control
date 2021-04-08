@@ -6,13 +6,14 @@ class Scenario(BaseScenario):
     def make_world(self):
         world = World()
         num_agents = 3
-        num_obstacles = 6
         # add agents
         world.agents = [Agent() for i in range(num_agents)]
         for i, agent in enumerate(world.agents):
             agent.name = 'agent %d' % i
             agent.collide = False
             agent.silent = True
+            agent.max_speed = 1.0 # None
+            agent.accel = 0.5#standard is none but later used as 5
 
         # Add obstacles
         world.landmarks = [Landmark()]
@@ -42,11 +43,6 @@ class Scenario(BaseScenario):
             agent.state.p_vel = np.zeros(world.dim_p)
             agent.state.c = np.zeros(world.dim_c)
 
-        # After we set all the inital agent and landmark positions, 
-        # make sure we aren't in any collisions already
-        for agent in world.agents:
-            agent.state.p_pos = np.random.uniform(-1,+1, world.dim_p)
-
 
     def rel_pos_cost(self, pos1, pos2):
         # Distance is the l1 Norm
@@ -65,7 +61,7 @@ class Scenario(BaseScenario):
         # distance for cost from goal pos
         dist_from_goal = np.linalg.norm(agent.state.p_pos - self.goal_pos)
 
-        total_cost -= dist_from_goal
+        total_cost -= 2.0*dist_from_goal
 
         # Add a cost for movement
         total_cost -= np.sum(abs(agent.state.p_vel))
@@ -74,6 +70,7 @@ class Scenario(BaseScenario):
     # Our observation include every agents velocity and our current positions
     def observation(self, agent, world):
         obs = agent.state.p_vel
+        obs = np.append(obs, self.goal_dist)
         for other in world.agents:
             if agent != other:
                 rel_pos = (agent.state.p_pos - other.state.p_pos)
@@ -81,6 +78,7 @@ class Scenario(BaseScenario):
 
         rel_goal = agent.state.p_pos - self.goal_pos
         obs = np.concatenate([obs, rel_goal])
+
         return obs
 
     # In this scenario, we only go terminal if there is a collision
