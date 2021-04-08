@@ -6,13 +6,15 @@ class Scenario(BaseScenario):
     def make_world(self):
         world = World()
         num_agents = 3
-        num_obstacles = 6
+        num_obstacles = 10
         # add agents
         world.agents = [Agent() for i in range(num_agents)]
         for i, agent in enumerate(world.agents):
             agent.name = 'agent %d' % i
-            agent.collide = False
+            agent.collide = True
             agent.silent = True
+            agent.max_speed = 1.0 # None
+            agent.accel = 0.5#standard is none but later used as 5
 
         # Add obstacles
         world.landmarks = [Landmark() for i in range(num_obstacles)]
@@ -20,6 +22,11 @@ class Scenario(BaseScenario):
             landmark.name = 'landmark %d' % i
             landmark.collide = True
             landmark.movable = False
+
+        world.landmarks.append(Landmark())
+        world.landmarks[-1].name = 'goal landmark'
+        world.landmarks[-1].collide = False
+        world.landmarks[-1].movable = False
 
         # make initial conditions
         self.goal_dist = 1.0
@@ -30,20 +37,22 @@ class Scenario(BaseScenario):
 
         for i, landmark in enumerate(world.landmarks):
             landmark.color = np.array([0.1, 0.1, 0.1])
-            landmark.color[1] += 0.8
+            landmark.color[0] += 0.8
             landmark.index = i
+            landmark.state.p_pos = np.random.uniform(-1, +1, world.dim_p)
+            landmark.state.p_vel = np.zeros(world.dim_p)
 
         # Set a random goal position
         self.goal_pos = np.random.uniform(-3, +3, world.dim_p)
 
-        for i, landmark in enumerate(world.landmarks):
-            landmark.state.p_pos = np.random.uniform(-1, +1, world.dim_p)
-            landmark.state.p_vel = np.zeros(world.dim_p)
+        # Update our goal landmark for visualization
+        world.landmarks[-1].color = np.array([0.0, 0.0, 1.0])
+        world.landmarks[-1].p_pos = self.goal_pos
 
         # set random initial states
         for agent in world.agents:
             agent.color = np.array([0.25,0.25,0.25])
-            agent.state.p_pos = np.random.uniform(-1,+1, world.dim_p)
+            agent.state.p_pos = np.random.uniform(-3,+3, world.dim_p)
             agent.state.p_vel = np.zeros(world.dim_p)
             agent.state.c = np.zeros(world.dim_c)
 
@@ -51,7 +60,7 @@ class Scenario(BaseScenario):
         # make sure we aren't in any collisions already
         for agent in world.agents:
             while(self.is_collision(agent, world)):
-                agent.state.p_pos = np.random.uniform(-1,+1, world.dim_p)
+                agent.state.p_pos = np.random.uniform(-3,+3, world.dim_p)
 
 
     def rel_pos_cost(self, pos1, pos2):
@@ -68,7 +77,7 @@ class Scenario(BaseScenario):
             dist = np.sqrt(np.sum(np.square(delta_pos)))
             # minimum allowable distance
             dist_min = entity.size + agent.size
-            if dist < dist_min and entity != agent:
+            if dist < dist_min and entity != agent and entity.collide:
                 return True
         return False
 
@@ -85,7 +94,7 @@ class Scenario(BaseScenario):
         total_cost -= dist_from_goal
 
         # Chosen kind of arbitrarily, collision cost
-        total_cost -= 500.0 if self.is_collision(agent, world) else 0.0
+        total_cost -= 2.0 if self.is_collision(agent, world) else 0.0
 
         # Add a cost for movement
         total_cost -= np.sum(abs(agent.state.p_vel))
@@ -94,6 +103,7 @@ class Scenario(BaseScenario):
     # Our observation include every agents velocity and our current positions
     def observation(self, agent, world):
         obs = agent.state.p_vel
+        obs = np.append(obs, self.goal_dist)
         for other in world.agents:
             if agent != other:
                 rel_pos = (agent.state.p_pos - other.state.p_pos)

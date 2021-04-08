@@ -16,7 +16,7 @@ class ContMultiAgentEnv(MultiAgentEnv):
 
     def __init__(self, world, reset_callback=None, reward_callback=None,
                  observation_callback=None, info_callback=None,
-                 done_callback=None, shared_viewer=True, render_range=3):
+                 done_callback=None, shared_viewer=True, render_range=4):
 
         super().__init__(world, reset_callback, reward_callback, observation_callback, 
                 info_callback, done_callback, shared_viewer)
