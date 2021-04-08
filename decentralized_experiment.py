@@ -24,8 +24,10 @@ dir = generate_path("./experiments/" + args.agent + "/" + args.scenario_name + "
 env = make_env(args.scenario_name)
 
 if args.agent == "decddpg":
+    print("Running decentralized DDPG agent" + args.scenario_name + " environment.")
     agent = dec_ddpg_runner.DecDDPGRunner(env)
 elif args.agent == "maddpg":
+    print("Running MADDPG agent" + args.scenario_name + " environment.")
     agent = maddpg_runner.MADDPGRunner(env)
 else:
     raise Exception("Please provide valid agent type")

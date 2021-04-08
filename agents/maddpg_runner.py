@@ -118,7 +118,7 @@ class MADDPGRunner():
             if self.is_done(dones):
                 break
 
-        print(prev_states[-1][-2:])
+        #print(prev_states[-1][-2:])
 
         return episodic_reward, episode_info
 
