@@ -61,7 +61,8 @@ if args.gif=='True':
     save_render(dir + "/images_average_1.gif", images_average_1)
     save_render(dir + "/images_average_2.gif", images_average_2)
 
-plot_train_data(rewards, avg_rewards, path=dir+'train_data.png')
+if args.train=='True':
+    plot_train_data(rewards, avg_rewards, path=dir+'train_data.png')
 
 # TODO: write the episodic reward somewhere?
 plot_episode_data(states_last_1, path=dir+'states_last_1.png')
