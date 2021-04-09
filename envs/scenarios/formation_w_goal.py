@@ -48,7 +48,7 @@ class Scenario(BaseScenario):
         # Distance is the l1 Norm
         dist = np.linalg.norm(pos1 - pos2)
         # Cost is 0 at specified distance, larger otherwise
-        cost = max(-abs((dist - self.goal_dist)/(dist)), -1.0)
+        cost = -abs(dist-self.goal_dist)#max(-abs((dist - self.goal_dist)/(dist)), -1.0)
         return cost
 
     def reward(self, agent, world):
@@ -61,10 +61,10 @@ class Scenario(BaseScenario):
         # distance for cost from goal pos
         dist_from_goal = np.linalg.norm(agent.state.p_pos - self.goal_pos)
 
-        total_cost -= 2.0*dist_from_goal
+        total_cost -= dist_from_goal
 
         # Add a cost for movement
-        total_cost -= np.sum(abs(agent.state.p_vel))
+        #total_cost -= np.sum(abs(agent.state.p_vel))
         return total_cost
 
     # Our observation include every agents velocity and our current positions

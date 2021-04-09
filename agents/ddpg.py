@@ -188,8 +188,8 @@ class DDPGAgent():
             self.update_target(self._target_critic.variables, self._critic_model.variables)
 
             # End this episode when `done` is True
-            #if done:
-                #break
+            if done:
+                break
             prev_state = state
             episode_info.append(info)
 

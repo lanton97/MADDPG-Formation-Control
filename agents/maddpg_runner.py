@@ -35,11 +35,11 @@ class MADDPGRunner():
 
         return tf.convert_to_tensor(acts)
 
-    def get_non_exploring_acts(self, states):
+    def get_non_exploring_acts(self, states, policy_param):
         acts = []
         for i in range(self.num_agents):
             state = states[i]
-            acts.extend(self.agents[i].non_exploring_policy(state))
+            acts.extend(self.agents[i].non_exploring_policy(state, policy_param))
 
         return tf.convert_to_tensor(acts)
 
@@ -73,19 +73,32 @@ class MADDPGRunner():
         ep_reward_list =[]
         avg_reward_list = []
         info_buffer = []
+        best_reward = None
+        best_reward_avg = None
  
         with tqdm.trange(num_episodes) as t:
             for i in t:
                 episodic_reward, info = self.train_episode(num_steps)
                 ep_reward_list.append(episodic_reward)
-                # Mean of last 40 episodes
-                avg_reward = np.mean(ep_reward_list[-40:])
+                # Mean of last 10 episodes
+                avg_reward = np.mean(ep_reward_list[-10:])
                 t.set_description(f'Episode {i}')
                 episodic_reward_str = "⠀{:6.0f}".format(episodic_reward) #Extra spacing was ignored. So I added an invisible character right before
                 avg_reward_str = "⠀{:6.0f}".format(avg_reward)
                 t.set_postfix(episodic_reward=episodic_reward_str, average_reward=avg_reward_str)
                 avg_reward_list.append(avg_reward)
                 info_buffer.append(info)
+
+                if(best_reward == None or episodic_reward > best_reward):
+                    best_reward = episodic_reward
+                    for i, agent in enumerate(self.agents):
+                        agent.cache_best_single()
+
+                if(i >= 10 and (best_reward_avg == None or avg_reward > best_reward_avg)):
+                    best_reward_avg = avg_reward
+                    for i, agent in enumerate(self.agents):
+                        agent.cache_best_average()
+
            
         return ep_reward_list, avg_reward_list, info_buffer
 
@@ -106,7 +119,7 @@ class MADDPGRunner():
             self.distribute_to_buffers(prev_states, actions, rewards, states, dones)
             update_batch = self.buffer.sample_batch(self.batch_size)
             next_obs = self.split_obs(update_batch[-2])
-            next_actions = self.get_non_exploring_acts(next_obs)
+            next_actions = self.get_non_exploring_acts(next_obs, "last")
             next_actions = np.squeeze(np.reshape(next_actions, (self.batch_size, -1, 1)))
             self.update_agents(update_batch, next_actions)
             episodic_reward += sum(rewards)
@@ -118,7 +131,7 @@ class MADDPGRunner():
             if self.is_done(dones):
                 break
 
-        #print(prev_states[-1][-2:])
+        print(prev_states[-1])
 
         return episodic_reward, episode_info
 
@@ -132,10 +145,10 @@ class MADDPGRunner():
         for i in range(num_steps):
             print("Step {}".format(i))
             if render:
-                img = self.env.render()
+                img = self.env.render(mode)
                 images.append(img[0])
             prev_states = self.split_obs(tf.reshape(prev_states, (1, -1)))
-            actions = self.get_non_exploring_acts(prev_states)
+            actions = self.get_non_exploring_acts(prev_states, policy_param)
 
             states, rewards, dones, info = self.env.step(actions)
             rewards = tf.cast(rewards, dtype=tf.float32)
@@ -148,12 +161,13 @@ class MADDPGRunner():
             prev_states = states
             time.sleep(waitTime)
             episode_info.append(info)
+            print(prev_states[-1])
 
         return states, episodic_reward, episode_info, images
 
-    def save_agents(self, suffix=""):
+    def save_agents(self, suffix="", policy_param="best_average"):
         for i, agent in enumerate(self.agents):
-            agent.save_models(suffix=(suffix + str(i)))
+            agent.save_models(suffix=(suffix + str(i)), policy_param=policy_param)
 
     def load_agents(self, suffix=""):
         for i, agent in enumerate(self.agents):
