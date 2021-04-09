@@ -57,7 +57,7 @@ class ContMultiAgentEnv(MultiAgentEnv):
         # Just positions, this is fine
         info_n = []
         for agent in self.agents:
-            info_n.append(agent.state.p_pos)
+            info_n.append(agent.state.p_pos.copy())
 
 
         return obs_n, reward_n, done_n, info_n
