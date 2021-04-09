@@ -3,6 +3,7 @@ from gym import spaces
 from envs.cont_environment import ContMultiAgentEnv
 import envs.scenarios as scenarios
 import os, datetime, imageio
+import numpy as np
 # Adapted from the multi-agent particle env to use a continuous environment
 def make_env(scenario_name, benchmark=False):
 
@@ -36,22 +37,44 @@ def plot_train_data(rewards, avg_rewards, path =[]):
     plt.ylabel('Reward')
     plt.savefig(path)
 
-def plot_episode_data(states, path = []):
-    x = [item[2] for item in states]
-    y = [item[3] for item in states]
-    fig, ax = plt.subplots()  #create figure and axes
-    plt.plot(x, y,'--')
-    plt.plot(x[-1], y[-1], 'or')
-    plt.xlim((-3,3))
-    plt.ylim((-3,3))
-    plt.title("Particle Trajectory")
+def plot_episode_data(states, infos, path = []):
+    rels01 = []
+    rels12 = []
+    rels20 = []
+    #TODO: Generalize code
+    for info in infos:
+        rel01 = np.sqrt(np.sum((info[0] - info[1])**2))
+        rel12 = np.sqrt(np.sum((info[1] - info[2])**2))
+        rel20 = np.sqrt(np.sum((info[2] - info[0])**2))
+        rels01.append(rel01)
+        rels12.append(rel12)
+        rels20.append(rel20)
+    
+    fig, axs = plt.subplots(2)  #create figure and axes
+
+    for i in range(len(infos[0])):
+       pos =  [row[i] for row in infos]
+       x = [row[0] for row in pos]
+       y = [row[1] for row in pos]
+       axs[0].plot(x, y)
+       axs[0].plot(x[-1], y[-1], 'or')
+    #plt.xlim((-3,3))
+    #plt.ylim((-3,3))
+    axs[0].axis('equal')
+    axs[0].set(xlabel='X', ylabel='Y')
     plt.xlabel('X')
     plt.ylabel('Y')
+
+    axs[1].plot(rels01)
+    axs[1].plot(rels12)
+    axs[1].plot(rels20)
+    axs[1].set(xlabel='Steps', ylabel='Relative distances')
+    fig.suptitle("Particle Trajectory")
     plt.savefig(path)
 
 def save_render(path,images):
     print("Saving Gif!!!")
-    with imageio.get_writer(path, mode='I') as writer:
+    with imageio.get_writer(path, mode='I',fps=30) as writer:
         for img in images:
             writer.append_data(img)
     print("Finished saving Gif")

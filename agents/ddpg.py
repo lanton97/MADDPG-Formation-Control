@@ -227,16 +227,23 @@ class DDPGAgent():
 
     def save_models(self, suffix=""):
         dir = "./weights/ddpg" + suffix
-        #os.makedirs(dir)
         self._actor_model.save_weights(dir + "/actor")
         self._critic_model.save_weights(dir + "/critic")
         self._target_actor.save_weights(dir + "/target_actor")
         self._target_critic.save_weights(dir + "/target_critic")
+        self._actor_best.save_weights(dir + "/_actor_best")
+        self._critic_best.save_weights(dir + "/_critic_best")
+        self._actor_best_average.save_weights(dir + "/_actor_best_average")
+        self._critic_best_average.save_weights(dir + "/_critic_best_average")
 
     def load_models(self, suffix=""):
-        self._actor_model.load_weights("./weights/ddpg" + suffix + "/actor")
-        self._critic_model.load_weights("./weights/ddpg" + suffix + "/critic")
-        self._target_actor.load_weights("./weights/ddpg" + suffix + "/target_actor")
-        self._target_critic.load_weights("./weights/ddpg" + suffix + "/target_critic")
-
+        dir = "./weights/ddpg" + suffix
+        self._actor_model.load_weights(dir + "/actor")
+        self._critic_model.load_weights(dir + "/critic")
+        self._target_actor.load_weights(dir + "/target_actor")
+        self._target_critic.load_weights(dir + "/target_critic")
+        self._actor_best.load_weights(dir + "/_actor_best")
+        self._critic_best.load_weights(dir + "/_critic_best")
+        self._actor_best_average.load_weights(dir + "/_actor_best_average")
+        self._critic_best_average.load_weights(dir + "/_critic_best_average")
     
