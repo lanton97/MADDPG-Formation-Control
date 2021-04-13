@@ -9,19 +9,8 @@ action = action*acceleration
 - max_speed is initialized as none but is just a the name says. A maximum allowed value.
 
 
+## TODO LIST
 
-2 - Coordinate system
-- The origin in the simple scenario is the agent perspective. This is annoying. I am trying to find a solution for that.
-The landmark can be seen around (-1,1) of the agent.
-Down arrow moves the veicle up (The environment look like it is going downwards)
-Right arrow moves the veicle left (The environment look like it is going towards the right direction)
-         y+
-           / \
-            |
-            |
-            | 
- --------------------> x+
-            |
-            |
-            |
-
+- ADD best overall and best average model in MADDPG (and maybe DECDDPG)
+- DDPG has if done: break commented out but MAPPDG has it working. Which one should stay?
+- plot_episode_data is not using states

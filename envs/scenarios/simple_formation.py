@@ -12,7 +12,7 @@ class Scenario(BaseScenario):
             agent.collide = False
             agent.silent = True
             agent.max_speed = 1.0 # None
-            agent.accel = 2#standard is none but later used as 5
+            agent.accel = 2.0 #standard is none but later used as 5
         # make initial conditions
         self.goal_dist = 1.0
         self.reset_world(world)

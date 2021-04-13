@@ -13,19 +13,19 @@ parser.add_argument('--num_eps', dest='num_eps', default=1000,
 parser.add_argument('--save_images', dest='images', default='True',
                     help='True to save images and gifs, anything else not to.')
 
-parser.add_argument('--save_models', dest='save_model', default='True',
+parser.add_argument('--save_models', dest='save_model', default='False',
                     help='True to save models, anything not to.')
 
-parser.add_argument('--load_models', dest='load_model', default='False',
+parser.add_argument('--load_models', dest='load_model', default='True',
                     help='True to load models, anything else not to.')
 
-parser.add_argument('--train', dest='train', default='True',
+parser.add_argument('--train', dest='train', default='False',
                     help='True to train models, anything else not to.')
 
 parser.add_argument('--save_suffix', dest='save_suffix', default="1000it1_vel_1_acc_2",
                     help='Suffix for saving the file')
                     
-parser.add_argument('--load_suffix', dest='load_suffix', default="1000it1",
+parser.add_argument('--load_suffix', dest='load_suffix', default="1000it1_vel_1_acc_2",
                     help='Suffix for loading the file')
 
 
@@ -34,7 +34,7 @@ args = parser.parse_args()
 # Start Experiment
 # Experiment path
 if args.images=='True':
-    dir = generate_path("./experiments/" + args.scenario_name + "/")
+    dir = generate_path("./experiments/" + "/ddpg/" + args.scenario_name + "/" +  args.save_suffix)
 
 env = CentralizedEnvWrapper(make_env(args.scenario_name))
 agent = ddpg.DDPGAgent(env)

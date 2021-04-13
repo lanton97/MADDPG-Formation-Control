@@ -13,7 +13,7 @@ class Scenario(BaseScenario):
             agent.collide = False
             agent.silent = True
             agent.max_speed = 1.0 # None
-            agent.accel = 0.5#standard is none but later used as 5
+            agent.accel = 2.0#standard is none but later used as 5
 
         # Add obstacles
         world.landmarks = [Landmark()]

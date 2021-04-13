@@ -4,7 +4,7 @@ from gym import spaces
 from gym.envs.registration import EnvSpec
 import numpy as np
 from multiagent.environment import MultiAgentEnv
-
+import tensorflow as tf
 # TODO: Clean this to use just the super init and change the one parameter we need
 
 # environment for all agents in the multiagent world
@@ -57,8 +57,11 @@ class ContMultiAgentEnv(MultiAgentEnv):
         # Just positions, this is fine
         info_n = []
         for agent in self.agents:
-            info_n.append(agent.state.p_pos.copy())
-
+            if(tf.is_tensor(agent.state.p_pos)):
+                p_pos = tf.identity(agent.state.p_pos)
+            else:
+                p_pos = agent.state.p_pos.copy()
+            info_n.append(p_pos)
 
         return obs_n, reward_n, done_n, info_n
 
@@ -124,3 +127,8 @@ class ContMultiAgentEnv(MultiAgentEnv):
             results.append(self.viewers[i].render(return_rgb_array = mode=='rgb_array'))
 
         return results
+
+    def close(self):
+        for i in range(len(self.viewers)):
+            self.viewers[i].close()
+        super().close()
