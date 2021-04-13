@@ -81,6 +81,9 @@ class Scenario(BaseScenario):
 
         return obs
 
+    def info(self,agent, world):
+        return self.goal_pos
+
     # In this scenario, we only go terminal if there is a collision
     def done(self, agent, world):
         return False

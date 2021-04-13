@@ -160,7 +160,6 @@ class MADDPGRunner():
             prev_states = states
             time.sleep(waitTime)
 
-            #info.append(self.env.goal_pos)
             episode_info.append(info)
             #print(prev_states[-1])
 

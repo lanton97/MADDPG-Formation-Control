@@ -57,5 +57,8 @@ class Scenario(BaseScenario):
         #print(agent.state.p_vel)
         return np.append(np.concatenate([agent.state.p_vel, rel_pos[0], other_vels[0], rel_pos[1], other_vels[1]]), self.goal_dist)
 
+    def info(self, agent,world):
+        return None
+
     def done(self, agent, world):
         return False

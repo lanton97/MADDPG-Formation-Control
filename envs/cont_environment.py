@@ -62,6 +62,7 @@ class ContMultiAgentEnv(MultiAgentEnv):
             else:
                 p_pos = agent.state.p_pos.copy()
             info_n.append(p_pos)
+        info_n.append(self._get_info(self.agents[0]))
 
         return obs_n, reward_n, done_n, info_n
 
