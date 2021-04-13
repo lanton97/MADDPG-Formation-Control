@@ -63,24 +63,24 @@ states_average_2, episodic_reward_average_2, info_last_average_2, images_average
 env.close()
 
 if args.images=='True':
-    save_render(dir + "/images_last_1.gif", images_last_1[::2])
-    save_render(dir + "/images_last_2.gif", images_last_2[::2])
-    save_render(dir + "/images_overall_1.gif", images_overall_1[::2])
-    save_render(dir + "/images_overall_2.gif", images_overall_2[::2])
-    save_render(dir + "/images_average_1.gif", images_average_1[::2])
-    save_render(dir + "/images_average_2.gif", images_average_2[::2])
+    save_render(dir + "/images_last_1.gif", images_last_1)
+    save_render(dir + "/images_last_2.gif", images_last_2)
+    save_render(dir + "/images_overall_1.gif", images_overall_1)
+    save_render(dir + "/images_overall_2.gif", images_overall_2)
+    save_render(dir + "/images_average_1.gif", images_average_1)
+    save_render(dir + "/images_average_2.gif", images_average_2)
 
 if ((args.train=='True') & (args.images=='True')):
     plot_train_data(rewards, avg_rewards, path=dir+'train_data.png')
 
 # TODO: write the episodic reward somewhere?
 if args.images=='True':
-    plot_episode_data(states_last_1,info_last_1, path=dir+'info_last_1.png')
-    plot_episode_data(states_last_2,info_last_2, path=dir+'info_last_2.png')
-    plot_episode_data(states_overall_1,info_last_overall_1, path=dir+'info_overall_1.png')
-    plot_episode_data(states_overall_2,info_last_overall_2, path=dir+'info_overall_2.png')
-    plot_episode_data(states_average_1,info_last_average_1, path=dir+'info_average_1.png')
-    plot_episode_data(states_average_2,info_last_average_2, path=dir+'info_average_2.png')
+    plot_episode_data(args.scenario_name, info_last_1, path=dir+'info_last_1.png')
+    plot_episode_data(args.scenario_name, info_last_2, path=dir+'info_last_2.png')
+    plot_episode_data(args.scenario_name, info_last_overall_1, path=dir+'info_overall_1.png')
+    plot_episode_data(args.scenario_name, info_last_overall_2, path=dir+'info_overall_2.png')
+    plot_episode_data(args.scenario_name, info_last_average_1, path=dir+'info_average_1.png')
+    plot_episode_data(args.scenario_name, info_last_average_2, path=dir+'info_average_2.png')
 
 plt.show()
 

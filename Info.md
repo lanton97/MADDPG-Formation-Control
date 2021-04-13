@@ -9,8 +9,14 @@ action = action*acceleration
 - max_speed is initialized as none but is just a the name says. A maximum allowed value.
 
 
-## TODO LIST
+# TODO LIST
 
 - ADD best overall and best average model in MADDPG (and maybe DECDDPG)
 - DDPG has if done: break commented out but MAPPDG has it working. Which one should stay?
 - plot_episode_data is not using states
+
+
+# List for results
+ - Centralized simple formation 1000 iterations vel 1 acc 2
+ - Decentralized (MADDPG) simple formation 1000 iterations vel 1 acc 2
+ - Decentralized (MADDPG) formation with goal 1000 iterations vel 1 acc 2  # OK!

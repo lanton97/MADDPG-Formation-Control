@@ -9,7 +9,7 @@ parser.add_argument('--agent', dest='agent', default='maddpg',
         help='Name of the agent types: Valid values are \'decddpg\' and \'maddpg\'')
 
 parser.add_argument('--scenario', dest='scenario_name', default='formation_w_goal',
-                    help='Name of the scenario we want to run')
+                    help='Name of the scenario we want to run: simple_formation or formation_w_goal')
 
 parser.add_argument('--num_eps', dest='num_eps', default=1000,
                     help='Number of episodes to train for.', type=int)
@@ -70,13 +70,13 @@ states_average_1, episodic_reward_average_1, info_last_average_1, images_average
 states_average_2, episodic_reward_average_2, info_last_average_2, images_average_2 = agent.run_episode(num_steps, waitTime = 0, mode='rgb_array', policy_param='best_average') # Should we store the model that obtained the best reward? or always use the last one?
 env.close()
 
-#if args.images=='True':
-#    save_render(dir + "/images_last_1.gif", images_last_1)
-#    save_render(dir + "/images_last_2.gif", images_last_2)
-#    save_render(dir + "/images_overall_1.gif", images_overall_1)
-#    save_render(dir + "/images_overall_2.gif", images_overall_2)
-#    save_render(dir + "/images_average_1.gif", images_average_1)
-#    save_render(dir + "/images_average_2.gif", images_average_2)
+if args.images=='True':
+    save_render(dir + "/images_last_1.gif", images_last_1)
+    save_render(dir + "/images_last_2.gif", images_last_2)
+    save_render(dir + "/images_overall_1.gif", images_overall_1)
+    save_render(dir + "/images_overall_2.gif", images_overall_2)
+    save_render(dir + "/images_average_1.gif", images_average_1)
+    save_render(dir + "/images_average_2.gif", images_average_2)
 
 if ((args.train=='True') & (args.images=='True')):
     plot_train_data(rewards, avg_rewards, path=dir+'train_data.png')
