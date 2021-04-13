@@ -11,21 +11,22 @@ class Scenario(BaseScenario):
         world.agents = [Agent() for i in range(num_agents)]
         for i, agent in enumerate(world.agents):
             agent.name = 'agent %d' % i
-            agent.collide = True
+            agent.collidable = True
+            agent.collide = False
             agent.silent = True
-            agent.max_speed = 1.0 # None
-            agent.accel = 0.5#standard is none but later used as 5
 
         # Add obstacles
         world.landmarks = [Landmark() for i in range(num_obstacles)]
         for i, landmark in enumerate(world.landmarks):
             landmark.name = 'landmark %d' % i
-            landmark.collide = True
+            landmark.collidable = True
+            landmark.collide = False
             landmark.movable = False
 
         world.landmarks.append(Landmark())
         world.landmarks[-1].name = 'goal landmark'
         world.landmarks[-1].collide = False
+        world.landmarks[-1].collidable = False
         world.landmarks[-1].movable = False
 
         # make initial conditions
@@ -67,7 +68,7 @@ class Scenario(BaseScenario):
         # Distance is the l1 Norm
         dist = np.linalg.norm(pos1 - pos2)
         # Cost is 0 at specified distance, larger otherwise
-        cost = max(-abs((dist - self.goal_dist)/(dist)), -1.0)
+        cost = -abs(dist - self.goal_dist)
         return cost
 
     def is_collision(self, agent, world):
@@ -77,7 +78,7 @@ class Scenario(BaseScenario):
             dist = np.sqrt(np.sum(np.square(delta_pos)))
             # minimum allowable distance
             dist_min = entity.size + agent.size
-            if dist < dist_min and entity != agent and entity.collide:
+            if dist < dist_min and entity != agent and entity.collidable:
                 return True
         return False
 
@@ -94,7 +95,7 @@ class Scenario(BaseScenario):
         total_cost -= dist_from_goal
 
         # Chosen kind of arbitrarily, collision cost
-        total_cost -= 2.0 if self.is_collision(agent, world) else 0.0
+        total_cost -= 5000.0 if self.is_collision(agent, world) else 0.0
 
         # Add a cost for movement
         total_cost -= np.sum(abs(agent.state.p_vel))
@@ -115,6 +116,9 @@ class Scenario(BaseScenario):
         rel_goal = agent.state.p_pos - self.goal_pos
         obs = np.concatenate([obs, rel_goal])
         return obs
+
+    def info(self, agent, world):
+        return self.goal_pos
 
     # In this scenario, we only go terminal if there is a collision
     def done(self, agent, world):

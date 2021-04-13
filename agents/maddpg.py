@@ -158,31 +158,53 @@ class MADDPGAgent():
         self._actor_best.set_weights(self._actor_model.get_weights())
         self._critic_best.set_weights(self._critic_model.get_weights())
 
-    def save_models(self, suffix="", policy_param="best_average"):
-        if(policy_param == 'last'):
-            self._actor_model.save_weights("./weights/maddpg" + suffix + "/actor")
-            self._critic_model.save_weights("./weights/maddpg" + suffix + "/critic")
-            self._target_actor.save_weights("./weights/maddpg" + suffix + "/target_actor")
-            self._target_critic.save_weights("./weights/maddpg" + suffix + "/target_critic")
-        elif(policy_param == 'best_overall'):
-            self._actor_best.save_weights("./weights/maddpg" + suffix + "/actor")
-            self._critic_best.save_weights("./weights/maddpg" + suffix + "/critic")
-            self._target_actor.save_weights("./weights/maddpg" + suffix + "/target_actor")
-            self._target_critic.save_weights("./weights/maddpg" + suffix + "/target_critic")
-        elif(policy_param == 'best_average'):
-            self._actor_best_average.save_weights("./weights/maddpg" + suffix + "/actor")
-            self._critic_best_average.save_weights("./weights/maddpg" + suffix + "/critic")
-            self._target_actor.save_weights("./weights/maddpg" + suffix + "/target_actor")
-            self._target_critic.save_weights("./weights/maddpg" + suffix + "/target_critic")
-        else:
-            self._actor_model.save_weights("./weights/maddpg" + suffix + "/actor")
-            self._critic_model.save_weights("./weights/maddpg" + suffix + "/critic")
-            self._target_actor.save_weights("./weights/maddpg" + suffix + "/target_actor")
-            self._target_critic.save_weights("./weights/maddpg" + suffix + "/target_critic")
+#    def save_models(self, suffix="", policy_param="best_average"):
+#        if(policy_param == 'last'):
+#            self._actor_model.save_weights("./weights/maddpg" + suffix + "/actor")
+#            self._critic_model.save_weights("./weights/maddpg" + suffix + "/critic")
+#            self._target_actor.save_weights("./weights/maddpg" + suffix + "/target_actor")
+#            self._target_critic.save_weights("./weights/maddpg" + suffix + "/target_critic")
+#        elif(policy_param == 'best_overall'):
+#            self._actor_best.save_weights("./weights/maddpg" + suffix + "/actor")
+#            self._critic_best.save_weights("./weights/maddpg" + suffix + "/critic")
+#            self._target_actor.save_weights("./weights/maddpg" + suffix + "/target_actor")
+#            self._target_critic.save_weights("./weights/maddpg" + suffix + "/target_critic")
+#        elif(policy_param == 'best_average'):
+#            self._actor_best_average.save_weights("./weights/maddpg" + suffix + "/actor")
+#            self._critic_best_average.save_weights("./weights/maddpg" + suffix + "/critic")
+#            self._target_actor.save_weights("./weights/maddpg" + suffix + "/target_actor")
+#            self._target_critic.save_weights("./weights/maddpg" + suffix + "/target_critic")
+#        else:
+#            self._actor_model.save_weights("./weights/maddpg" + suffix + "/actor")
+#            self._critic_model.save_weights("./weights/maddpg" + suffix + "/critic")
+#            self._target_actor.save_weights("./weights/maddpg" + suffix + "/target_actor")
+#            self._target_critic.save_weights("./weights/maddpg" + suffix + "/target_critic")
 
   
+#    def load_models(self, suffix=""):
+#        self._actor_model.load_weights("./weights/maddpg" + suffix + "/actor")
+#        self._critic_model.load_weights("./weights/maddpg" + suffix + "/critic")
+#        self._target_actor.load_weights("./weights/maddpg" + suffix + "/target_actor")
+#        self._target_critic.load_weights("./weights/maddpg" + suffix + "/target_critic")
+
+    def save_models(self, suffix=""):
+        dir = "./weights/maddpg" + suffix
+        self._actor_model.save_weights(dir + "/actor")
+        self._critic_model.save_weights(dir + "/critic")
+        self._target_actor.save_weights(dir + "/target_actor")
+        self._target_critic.save_weights(dir + "/target_critic")
+        self._actor_best.save_weights(dir + "/_actor_best")
+        self._critic_best.save_weights(dir + "/_critic_best")
+        self._actor_best_average.save_weights(dir + "/_actor_best_average")
+        self._critic_best_average.save_weights(dir + "/_critic_best_average")
+  
     def load_models(self, suffix=""):
-        self._actor_model.load_weights("./weights/maddpg" + suffix + "/actor")
-        self._critic_model.load_weights("./weights/maddpg" + suffix + "/critic")
-        self._target_actor.load_weights("./weights/maddpg" + suffix + "/target_actor")
-        self._target_critic.load_weights("./weights/maddpg" + suffix + "/target_critic")
+        dir = "./weights/maddpg" + suffix
+        self._actor_model.load_weights(dir + "/actor")
+        self._critic_model.load_weights(dir + "/critic")
+        self._target_actor.load_weights(dir + "/target_actor")
+        self._target_critic.load_weights(dir + "/target_critic")
+        self._actor_best.load_weights(dir + "/_actor_best")
+        self._critic_best.load_weights(dir + "/_critic_best")
+        self._actor_best_average.load_weights(dir + "/_actor_best_average")
+        self._critic_best_average.load_weights(dir + "/_critic_best_average")

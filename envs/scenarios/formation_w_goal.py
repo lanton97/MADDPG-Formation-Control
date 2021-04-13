@@ -13,7 +13,7 @@ class Scenario(BaseScenario):
             agent.collide = False
             agent.silent = True
             agent.max_speed = 1.0 # None
-            agent.accel = 0.5#standard is none but later used as 5
+            agent.accel = 2.0#standard is none but later used as 5
 
         # Add obstacles
         world.landmarks = [Landmark()]
@@ -80,6 +80,9 @@ class Scenario(BaseScenario):
         obs = np.concatenate([obs, rel_goal])
 
         return obs
+
+    def info(self,agent, world):
+        return self.goal_pos
 
     # In this scenario, we only go terminal if there is a collision
     def done(self, agent, world):

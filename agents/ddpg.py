@@ -53,7 +53,7 @@ class DDPGAgent():
         self._actor_best_average = generate_actor_network(self._num_obs, self._num_act, self._max)
         self._critic_best_average = generate_critic_network(self._num_obs, self._num_act)
 
-        self._actor_model.summary()
+        #self._actor_model.summary()
 
         # Making the weights equal initially
         self._target_actor.set_weights(self._actor_model.get_weights())

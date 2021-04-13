@@ -13,19 +13,19 @@ parser.add_argument('--num_eps', dest='num_eps', default=1000,
 parser.add_argument('--save_images', dest='images', default='True',
                     help='True to save images and gifs, anything else not to.')
 
-parser.add_argument('--save_models', dest='save_model', default='True',
+parser.add_argument('--save_models', dest='save_model', default='False',
                     help='True to save models, anything not to.')
 
-parser.add_argument('--load_models', dest='load_model', default='False',
+parser.add_argument('--load_models', dest='load_model', default='True',
                     help='True to load models, anything else not to.')
 
-parser.add_argument('--train', dest='train', default='True',
+parser.add_argument('--train', dest='train', default='False',
                     help='True to train models, anything else not to.')
 
 parser.add_argument('--save_suffix', dest='save_suffix', default="1000it1_vel_1_acc_2",
                     help='Suffix for saving the file')
                     
-parser.add_argument('--load_suffix', dest='load_suffix', default="1000it1",
+parser.add_argument('--load_suffix', dest='load_suffix', default="1000it1_vel_1_acc_2",
                     help='Suffix for loading the file')
 
 
@@ -34,7 +34,7 @@ args = parser.parse_args()
 # Start Experiment
 # Experiment path
 if args.images=='True':
-    dir = generate_path("./experiments/" + args.scenario_name + "/")
+    dir = generate_path("./experiments/" + "/ddpg/" + args.scenario_name + "/" +  args.save_suffix)
 
 env = CentralizedEnvWrapper(make_env(args.scenario_name))
 agent = ddpg.DDPGAgent(env)
@@ -63,24 +63,24 @@ states_average_2, episodic_reward_average_2, info_last_average_2, images_average
 env.close()
 
 if args.images=='True':
-    save_render(dir + "/images_last_1.gif", images_last_1[::2])
-    save_render(dir + "/images_last_2.gif", images_last_2[::2])
-    save_render(dir + "/images_overall_1.gif", images_overall_1[::2])
-    save_render(dir + "/images_overall_2.gif", images_overall_2[::2])
-    save_render(dir + "/images_average_1.gif", images_average_1[::2])
-    save_render(dir + "/images_average_2.gif", images_average_2[::2])
+    save_render(dir + "/images_last_1.gif", images_last_1)
+    save_render(dir + "/images_last_2.gif", images_last_2)
+    save_render(dir + "/images_overall_1.gif", images_overall_1)
+    save_render(dir + "/images_overall_2.gif", images_overall_2)
+    save_render(dir + "/images_average_1.gif", images_average_1)
+    save_render(dir + "/images_average_2.gif", images_average_2)
 
 if ((args.train=='True') & (args.images=='True')):
     plot_train_data(rewards, avg_rewards, path=dir+'train_data.png')
 
 # TODO: write the episodic reward somewhere?
 if args.images=='True':
-    plot_episode_data(states_last_1,info_last_1, path=dir+'info_last_1.png')
-    plot_episode_data(states_last_2,info_last_2, path=dir+'info_last_2.png')
-    plot_episode_data(states_overall_1,info_last_overall_1, path=dir+'info_overall_1.png')
-    plot_episode_data(states_overall_2,info_last_overall_2, path=dir+'info_overall_2.png')
-    plot_episode_data(states_average_1,info_last_average_1, path=dir+'info_average_1.png')
-    plot_episode_data(states_average_2,info_last_average_2, path=dir+'info_average_2.png')
+    plot_episode_data(args.scenario_name, info_last_1, path=dir+'info_last_1.png')
+    plot_episode_data(args.scenario_name, info_last_2, path=dir+'info_last_2.png')
+    plot_episode_data(args.scenario_name, info_last_overall_1, path=dir+'info_overall_1.png')
+    plot_episode_data(args.scenario_name, info_last_overall_2, path=dir+'info_overall_2.png')
+    plot_episode_data(args.scenario_name, info_last_average_1, path=dir+'info_average_1.png')
+    plot_episode_data(args.scenario_name, info_last_average_2, path=dir+'info_average_2.png')
 
 plt.show()
 

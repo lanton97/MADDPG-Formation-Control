@@ -143,7 +143,7 @@ class MADDPGRunner():
         images = []
 
         for i in range(num_steps):
-            print("Step {}".format(i))
+            #print("Step {}".format(i))
             if render:
                 img = self.env.render(mode)
                 images.append(img[0])
@@ -153,21 +153,21 @@ class MADDPGRunner():
             states, rewards, dones, info = self.env.step(actions)
             rewards = tf.cast(rewards, dtype=tf.float32)
             episodic_reward += sum(rewards)
-            episode_info.append(info)
 
             # End this episode when `done` is True
             if self.is_done(dones):
                 break
             prev_states = states
             time.sleep(waitTime)
+
             episode_info.append(info)
-            print(prev_states[-1])
+            #print(prev_states[-1])
 
         return states, episodic_reward, episode_info, images
 
     def save_agents(self, suffix="", policy_param="best_average"):
         for i, agent in enumerate(self.agents):
-            agent.save_models(suffix=(suffix + str(i)), policy_param=policy_param)
+            agent.save_models(suffix=(suffix + str(i)))
 
     def load_agents(self, suffix=""):
         for i, agent in enumerate(self.agents):

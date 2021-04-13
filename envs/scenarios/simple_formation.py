@@ -12,7 +12,7 @@ class Scenario(BaseScenario):
             agent.collide = False
             agent.silent = True
             agent.max_speed = 1.0 # None
-            agent.accel = 2#standard is none but later used as 5
+            agent.accel = 2.0 #standard is none but later used as 5
         # make initial conditions
         self.goal_dist = 1.0
         self.reset_world(world)
@@ -56,6 +56,9 @@ class Scenario(BaseScenario):
                 other_vels.append(other.state.p_vel)
         #print(agent.state.p_vel)
         return np.append(np.concatenate([agent.state.p_vel, rel_pos[0], other_vels[0], rel_pos[1], other_vels[1]]), self.goal_dist)
+
+    def info(self, agent,world):
+        return None
 
     def done(self, agent, world):
         return False
