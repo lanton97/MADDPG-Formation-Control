@@ -129,12 +129,12 @@ class Scenario(BaseScenario):
                 total_cost += formation_weight*self.rel_pos_cost(agent.state.p_pos, other.state.p_pos)
 
         # distance for cost from goal pos
-        dist_from_goal = np.linalg.norm(agent.state.p_pos - self.goal_pos)
+        dist_from_goal = 10*np.linalg.norm(agent.state.p_pos - self.goal_pos)
 
         total_cost -= dist_from_goal
 
         # Chosen kind of arbitrarily, collision cost
-        total_cost -= 1 if self.is_collision(agent, world.obstacles) else 0.0
+        total_cost -= 10 if self.is_collision(agent, world.obstacles) else 0.0
 
         # Add a cost for movement
         #total_cost -= np.sum(abs(agent.state.p_vel))
