@@ -8,8 +8,8 @@ parser = argparse.ArgumentParser(description='File to run experiments for som sc
 parser.add_argument('--agent', dest='agent', default='maddpg',
         help='Name of the agent types: Valid values are \'decddpg\' and \'maddpg\'')
 
-parser.add_argument('--scenario', dest='scenario_name', default='formation_w_goal',
-                    help='Name of the scenario we want to run: simple_formation or formation_w_goal')
+parser.add_argument('--scenario', dest='scenario_name', default='formation_w_coll_avoidance',
+                    help='Name of the scenario we want to run: simple_formation or formation_w_goal or formation_w_coll_avoidance')
 
 parser.add_argument('--num_eps', dest='num_eps', default=1000,
                     help='Number of episodes to train for.', type=int)
@@ -17,13 +17,13 @@ parser.add_argument('--num_eps', dest='num_eps', default=1000,
 parser.add_argument('--save_images', dest='images', default='True',
                     help='True to save images and gifs, False not to.')
 
-parser.add_argument('--save_models', dest='save_model', default='False',
+parser.add_argument('--save_models', dest='save_model', default='True',
                     help='True to save models, False not to.')
 
-parser.add_argument('--load_models', dest='load_model', default='True',
+parser.add_argument('--load_models', dest='load_model', default='False',
                     help='True to load models, anything not to.')
 
-parser.add_argument('--train', dest='train', default='False',
+parser.add_argument('--train', dest='train', default='True',
                     help='True to train models, anything else not to.')
 
 parser.add_argument('--save_suffix', dest='save_suffix', default="1000it1_vel_1_acc_2",

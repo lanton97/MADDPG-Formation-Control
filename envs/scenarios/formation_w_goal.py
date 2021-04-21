@@ -64,7 +64,7 @@ class Scenario(BaseScenario):
         total_cost -= dist_from_goal
 
         # Add a cost for movement
-        #total_cost -= np.sum(abs(agent.state.p_vel))
+        total_cost -= np.sum(abs(agent.state.p_vel))
         return total_cost
 
     # Our observation include every agents velocity and our current positions
