@@ -41,36 +41,6 @@ class Scenario(BaseScenario):
         self.reset_world(world)
         return world
 
-
-#    def reset_world(self, world, ):
-#
-#        for i, landmark in enumerate(world.landmarks):
-#            landmark.color = np.array([0.1, 0.1, 0.1])
-#            landmark.color[0] += 0.8
-#            landmark.index = i
-#            landmark.state.p_pos = np.random.uniform(-1, +1, world.dim_p)
-#            landmark.state.p_vel = np.zeros(world.dim_p)
-#
-#        # Set a random goal position
-#        self.goal_pos = np.random.uniform(-3, +3, world.dim_p)
-#
-#        # Update our goal landmark for visualization
-#        world.landmarks[-1].color = np.array([0.0, 0.0, 1.0])
-#        world.landmarks[-1].p_pos = self.goal_pos
-#
-#        # set random initial states
-#        for agent in world.agents:
-#            agent.color = np.array([0.25,0.25,0.25])
-#            agent.state.p_pos = np.random.uniform(-3,+3, world.dim_p)
-#            agent.state.p_vel = np.zeros(world.dim_p)
-#            agent.state.c = np.zeros(world.dim_c)
-#
-#        # After we set all the inital agent and landmark positions, 
-#        # make sure we aren't in any collisions already
-#        for agent in world.agents:
-#            while(self.is_collision(agent, world)):
-#                agent.state.p_pos = np.random.uniform(-3,+3, world.dim_p)
-
     def reset_world(self, world):
 
         for i, landmark in enumerate(world.obstacles):
@@ -98,7 +68,7 @@ class Scenario(BaseScenario):
         # After we set all the inital agent and landmark positions, 
         # make sure we aren't in any collisions already
         for agent in world.agents:
-            while(self.is_collision(agent, world.obstacles)):
+            while(self.is_collision(agent, world)):
                 agent.state.p_pos = np.random.uniform(-3,+3, world.dim_p)
 
 
@@ -109,14 +79,14 @@ class Scenario(BaseScenario):
         cost = -abs(dist - self.goal_dist)
         return cost
 
-    def is_collision(self, agent, obstacles):
-        for obstacle in obstacles:
+    def is_collision(self, agent, world):
+        for entity in (world.agents + world.obstacles + world.goal):
             # compute actual distance between entities
-            delta_pos = obstacle.state.p_pos - agent.state.p_pos
+            delta_pos = entity.state.p_pos - agent.state.p_pos
             dist = np.sqrt(np.sum(np.square(delta_pos)))
             # minimum allowable distance
-            dist_min = obstacle.size + agent.size
-            if dist < dist_min and obstacle != agent and obstacle.collidable:
+            dist_min = entity.size + agent.size
+            if dist < dist_min and entity != agent and entity.collidable:
                 return True
         return False
 
@@ -134,7 +104,7 @@ class Scenario(BaseScenario):
         total_cost -= dist_from_goal
 
         # Chosen kind of arbitrarily, collision cost
-        total_cost -= 10 if self.is_collision(agent, world.obstacles) else 0.0
+        total_cost -= 10 if self.is_collision(agent, world) else 0.0
 
         # Add a cost for movement
         #total_cost -= np.sum(abs(agent.state.p_vel))
