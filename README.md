@@ -1,1 +1,1 @@
-# A2C-Formation-Control
+# MADDPG-Formation-Control
