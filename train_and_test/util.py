@@ -20,14 +20,17 @@ def make_env(scenario_name, benchmark=False):
     if benchmark:        
         env = ContMultiAgentEnv(world, scenario.reset_world, scenario.reward, scenario.observation,  scenario.benchmark_data)
     else:
+        # Create the environment with all of the callbacks
         env = ContMultiAgentEnv(world, scenario.reset_world, scenario.reward, scenario.observation, info_callback=scenario.info, done_callback=scenario.done, shared_viewer=True)
     return env
 
+# Generate a timestamped directory
 def generate_path(dir):
     exp_dir = os.path.join(dir, datetime.datetime.now().strftime('%Y-%m-%d_%H-%M-%S/'))
     os.makedirs(exp_dir)
     return exp_dir
 
+# Plot the training curves
 def plot_train_data(rewards, avg_rewards, path =[]):
     fig, ax = plt.subplots()  #create figure and axes
     plt.axhline(y=0, color='r', linestyle='--', label='Zero line')
@@ -152,6 +155,7 @@ def plot_episode_data_formation_w_goal(infos, path = []):
     plt.savefig(path)
 
 
+# Saves the gif for system behaviour
 def save_render(path,images):
     print("Saving Gif!!!")
     with imageio.get_writer(path, mode='I',fps=30) as writer:

@@ -67,6 +67,7 @@ class MADDPGAgent():
         self._actor_best_average = generate_actor_network(self._num_obs, self._num_act, self._max)
         self._critic_best_average = generate_critic_network(self._total_obs_size, self._total_act_size)
 
+    # Sample the policy with noise from one set of the saved neural nets
     def policy(self, state, policy_param = 'last'):
         sampled_actions = None
         if(policy_param == 'last'):
@@ -86,6 +87,7 @@ class MADDPGAgent():
 
         return [np.squeeze(legal_action)]
 
+    # Noiseless action sampling
     def non_exploring_policy(self, state, policy_param = 'last'):
         sampled_actions = None
         if(policy_param == 'last'):
@@ -102,35 +104,47 @@ class MADDPGAgent():
 
         return [np.squeeze(legal_action)]
 
+    # Custom NN updates based on the MADDPG paper
     @tf.function
     def update(
         self, state_batch, action_batch, reward_batch, next_state_batch, done_batch, next_actions
     ):
+        # Split this agents states off of the blob
         local_next_state_batch = next_state_batch[:,self._obs_start_ind:self._obs_start_ind + self._num_obs]
         with tf.GradientTape() as tape:
+            # Select the next action based on the next state
             target_actions = self._target_actor(local_next_state_batch, training=True)
+            # Push our next actions into the blob of all of the agents next actions
             updated_next_actions = tf.concat([next_actions[:,:self._act_start_ind], target_actions[:], next_actions[:,self._act_start_ind + self._num_act:]], 1)
+            # Extract this agents rewards from the reward batch
             r = tf.expand_dims(reward_batch[:,self._agent_index], -1)
             y = r + self._gamma * self._target_critic(
                 [next_state_batch, updated_next_actions], training=True
             )
-
             critic_value = self._critic_model([state_batch, action_batch], training=True)
+            # MSE of the TD error for loss
             critic_loss = tf.math.reduce_mean(tf.math.square(y - critic_value))
 
+        # Get and apply gradients for the critic
         critic_grad = tape.gradient(critic_loss, self._critic_model.trainable_variables)
         self._critic_opt.apply_gradients(
             zip(critic_grad, self._critic_model.trainable_variables)
         )
 
+        # Get this agents state from the blob
         local_state_batch = state_batch[:,self._obs_start_ind:self._obs_start_ind + self._num_obs]
 
         with tf.GradientTape() as tape:
+            # Check which actions this agent would take now
             local_actions = tf.cast(self._actor_model(local_state_batch, training=True), dtype=tf.float64)
+            # Stitch the actions into all of the agents actions for the critic
             updated_action = tf.concat([action_batch[:,0:self._act_start_ind], local_actions[:], action_batch[:,self._act_start_ind + self._num_act:]], 1)
+            # Get the critic estimation for this set of actions
             critic_value = self._critic_model([state_batch, updated_action], training=True)
+            # Use negative mean for loss since we want to do gradient ascent
             actor_loss = -tf.math.reduce_mean(critic_value)
 
+        # Get and apply gradient for actor networks
         actor_grad = tape.gradient(actor_loss, self._actor_model.trainable_variables)
         self._actor_opt.apply_gradients(
             zip(actor_grad, self._actor_model.trainable_variables)
@@ -143,50 +157,25 @@ class MADDPGAgent():
         for (a, b) in zip(target_weights, weights):
             a.assign(b * self._tau + a * (1 - self._tau))
 
+    # Update the networks and target networks
     def perform_update_step(self, update_batch, next_actions):
         self.update(*update_batch, next_actions)
 
         self.update_target(self._target_actor.variables, self._actor_model.variables)
         self.update_target(self._target_critic.variables, self._critic_model.variables)
 
+    # Save the best average reward nets
     def cache_best_average(self):
         self._actor_best_average.set_weights(self._actor_model.get_weights())
         self._critic_best_average.set_weights(self._critic_model.get_weights())
 
 
+    # Save the best overall reward nets
     def cache_best_single(self):
         self._actor_best.set_weights(self._actor_model.get_weights())
         self._critic_best.set_weights(self._critic_model.get_weights())
 
-#    def save_models(self, suffix="", policy_param="best_average"):
-#        if(policy_param == 'last'):
-#            self._actor_model.save_weights("./weights/maddpg" + suffix + "/actor")
-#            self._critic_model.save_weights("./weights/maddpg" + suffix + "/critic")
-#            self._target_actor.save_weights("./weights/maddpg" + suffix + "/target_actor")
-#            self._target_critic.save_weights("./weights/maddpg" + suffix + "/target_critic")
-#        elif(policy_param == 'best_overall'):
-#            self._actor_best.save_weights("./weights/maddpg" + suffix + "/actor")
-#            self._critic_best.save_weights("./weights/maddpg" + suffix + "/critic")
-#            self._target_actor.save_weights("./weights/maddpg" + suffix + "/target_actor")
-#            self._target_critic.save_weights("./weights/maddpg" + suffix + "/target_critic")
-#        elif(policy_param == 'best_average'):
-#            self._actor_best_average.save_weights("./weights/maddpg" + suffix + "/actor")
-#            self._critic_best_average.save_weights("./weights/maddpg" + suffix + "/critic")
-#            self._target_actor.save_weights("./weights/maddpg" + suffix + "/target_actor")
-#            self._target_critic.save_weights("./weights/maddpg" + suffix + "/target_critic")
-#        else:
-#            self._actor_model.save_weights("./weights/maddpg" + suffix + "/actor")
-#            self._critic_model.save_weights("./weights/maddpg" + suffix + "/critic")
-#            self._target_actor.save_weights("./weights/maddpg" + suffix + "/target_actor")
-#            self._target_critic.save_weights("./weights/maddpg" + suffix + "/target_critic")
-
-  
-#    def load_models(self, suffix=""):
-#        self._actor_model.load_weights("./weights/maddpg" + suffix + "/actor")
-#        self._critic_model.load_weights("./weights/maddpg" + suffix + "/critic")
-#        self._target_actor.load_weights("./weights/maddpg" + suffix + "/target_actor")
-#        self._target_critic.load_weights("./weights/maddpg" + suffix + "/target_critic")
-
+    # Save all of our networks
     def save_models(self, suffix=""):
         dir = "./weights/maddpg" + suffix
         self._actor_model.save_weights(dir + "/actor")
@@ -198,6 +187,7 @@ class MADDPGAgent():
         self._actor_best_average.save_weights(dir + "/_actor_best_average")
         self._critic_best_average.save_weights(dir + "/_critic_best_average")
   
+    # Load all of the networks
     def load_models(self, suffix=""):
         dir = "./weights/maddpg" + suffix
         self._actor_model.load_weights(dir + "/actor")
