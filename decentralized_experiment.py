@@ -68,6 +68,7 @@ if args.train=='True':
 if args.save_model=='True':
     agent.save_agents(suffix=args.scenario_name + args.save_suffix)
 
+
 # We run sample episodes to observe the performance of several agents, including the last version, the best average reward and the best overall reward
 states_last_1, episodic_reward_last_1, info_last_1, images_last_1 = agent.run_episode(num_steps, waitTime = 0.0, mode='rgb_array')
 states_last_2, episodic_reward_last_2, info_last_2, images_last_2 = agent.run_episode(num_steps, waitTime = 0.0, mode='rgb_array')
@@ -88,6 +89,8 @@ if args.images=='True':
 
 # save the training data
 if ((args.train=='True') & (args.images=='True')):
+    np.save(dir+'rewards', rewards)
+    np.save(dir+'avg_rewards', avg_rewards)
     plot_train_data(rewards, avg_rewards, path=dir+'train_data.png')
 
 # Save information on the systems performance

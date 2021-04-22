@@ -76,6 +76,8 @@ if args.images=='True':
 
 # Plot training data
 if ((args.train=='True') & (args.images=='True')):
+    np.save(dir+'rewards', rewards)
+    np.save(dir+'avg_rewards', avg_rewards)
     plot_train_data(rewards, avg_rewards, path=dir+'train_data.png')
 
 # Plot information on the agent behaviour
