@@ -5,7 +5,7 @@ import argparse
 
 
 parser = argparse.ArgumentParser(description='File to run experiments for som scenario with a decentralized agent.')
-parser.add_argument('--agent', dest='agent', default='decddpg',
+parser.add_argument('--agent', dest='agent', default='maddpg',
         help='Name of the agent types: Valid values are \'decddpg\' and \'maddpg\'')
 
 parser.add_argument('--scenario', dest='scenario_name', default='formation_w_coll_avoidance',
