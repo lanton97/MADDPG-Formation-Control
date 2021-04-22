@@ -4,7 +4,7 @@ from train_and_test.util import *
 import argparse
 
 
-parser = argparse.ArgumentParser(description='File to run experiments for som scenario with a centralized agent.')
+parser = argparse.ArgumentParser(description='File to run experiments for som scenario with a decentralized agent.')
 parser.add_argument('--agent', dest='agent', default='decddpg',
         help='Name of the agent types: Valid values are \'decddpg\' and \'maddpg\'')
 

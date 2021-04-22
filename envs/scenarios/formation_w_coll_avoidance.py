@@ -106,8 +106,6 @@ class Scenario(BaseScenario):
         # Chosen kind of arbitrarily, collision cost
         total_cost -= 1 if self.is_collision(agent, world) else 0.0
 
-        # Add a cost for movement
-        #total_cost -= np.sum(abs(agent.state.p_vel))
         return total_cost
 
     # Our observation include every agents velocity and our current positions
@@ -129,10 +127,7 @@ class Scenario(BaseScenario):
     def info(self, agent, world):
         return self.goal_pos
 
-    # In this scenario, we only go terminal if there is a collision
     def done(self, agent, world):
-        #if self.is_collision(agent, world):
-         #   return True
         return False
         
 
