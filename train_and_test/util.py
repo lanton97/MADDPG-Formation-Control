@@ -46,14 +46,16 @@ def plot_train_data(rewards, avg_rewards, path =[]):
     plt.savefig(path)
 
 
-def plot_episode_data(scenario, infos, path = []):
+def plot_episode_data(scenario, infos, path = [], file_name = []):
     if(scenario == 'simple_formation'):
-        plot_episode_data_simple_formation(infos, path)
+        plot_episode_data_simple_formation(infos, path, file_name)
     elif(scenario == 'formation_w_goal'):
-        plot_episode_data_formation_w_goal(infos, path)
+        plot_episode_data_formation_w_goal(infos, path, file_name)
+    elif(scenario == 'formation_w_coll_avoidance'):
+        plot_episode_data_formation_w_coll_avoidance(infos, path, file_name)
    
 
-def plot_episode_data_simple_formation(infos, path = []):
+def plot_episode_data_simple_formation(infos, path = [], file_name = []):
     rels01 = []
     rels12 = []
     rels20 = []
@@ -67,34 +69,38 @@ def plot_episode_data_simple_formation(infos, path = []):
         rels20.append(rel20)
     
     plt.rc('axes', prop_cycle=cycler('color', ['c', 'm', 'y', 'k'])) 
-    fig, axs = plt.subplots(2)  #create figure and axes
+    cmap = plt.cm.get_cmap('tab10', 6)
+
+    fig, axs = plt.subplots(1)  #create figure and axes
+
     for i in range(len(infos[0])-1):
        pos =  [row[i] for row in infos]
        x = [row[0] for row in pos]
        y = [row[1] for row in pos]
-       axs[0].plot(x, y)
-       axs[0].plot(x[-1], y[-1], 'o', color=[0.55, 0.55, 0.55])
+       axs.plot(x, y, color = cmap(i))
+       axs.plot(x[-1], y[-1], 'o', color=[0.55, 0.55, 0.55])
     #plt.xlim((-3,3))
     #plt.ylim((-3,3))
-    axs[0].axis('equal')
-    axs[0].set(xlabel='X', ylabel='Y')
-    axs[0].set_title("Particle Trajectories")
-    axs[0].set(xlabel='X', ylabel='Y')
-    axs[0].locator_params(axis="both", integer=True, tight=True)
+    axs.axis('equal')
+    axs.set(xlabel='X', ylabel='Y')
+    axs.set_title("Particle Trajectories")
+    axs.set(xlabel='X', ylabel='Y')
+    axs.locator_params(axis="both", integer=True, tight=True)
 
-    axs[1].axhline(y=1, color='r', linestyle='--', label='Goal distance')
-    axs[1].plot(rels01)
-    axs[1].plot(rels12)
-    axs[1].plot(rels20)
-    axs[1].set(xlabel='Steps', ylabel='Distance')
-    axs[1].set_title("Relative distances")
-    axs[1].locator_params(axis="both", integer=True, tight=True)
+    fig, axs = plt.subplots(1)  #create figure and axes
 
-    plt.tight_layout()
+    axs.axhline(y=1, color='r', linestyle='--', label='Goal distance')
+    axs.plot(rels01,color=cmap(0))
+    axs.plot(rels12,color=cmap(1))
+    axs.plot(rels20,color=cmap(2))
+    axs.set(xlabel='Steps', ylabel='Distance')
+    axs.set_title("Relative distances")
+    axs.locator_params(axis="both", integer=True, tight=True)
 
-    plt.savefig(path)
 
-def plot_episode_data_formation_w_goal(infos, path = []):
+    plt.savefig(path + filename + ".png")
+
+def plot_episode_data_formation_w_goal(infos, path = [], file_name = []):
     rels01 = []
     rels12 = []
     rels20 = []
@@ -119,40 +125,126 @@ def plot_episode_data_formation_w_goal(infos, path = []):
     # Compute distance of median to goal
     dist_to_goal = np.sqrt((x_medians-goal_pos[0])**2 + (y_medians-goal_pos[1])**2) 
     
-    plt.rc('axes', prop_cycle=cycler('color', ['c', 'm', 'y', 'k'])) 
-    fig, axs = plt.subplots(3)  #create figure and axes
+    #plt.rc('axes', prop_cycle=cycler('color', ['c', 'm', 'y', 'k'])) 
+    cmap = plt.cm.get_cmap('tab10', 6)
+
+    fig, axs = plt.subplots(1)  #create figure and axes
     
     for i in range(len(infos[0])-1):
        pos =  [row[i] for row in infos]
        x = [row[0] for row in pos]
        y = [row[1] for row in pos]
-       axs[0].plot(x, y)
-       axs[0].plot(x[-1], y[-1], 'o', color=[0.55, 0.55, 0.55])
-    axs[0].plot(goal_pos[0], goal_pos[1], 'go')
+       axs.plot(x, y, color=cmap(i))
+       axs.plot(x[-1], y[-1], 'o', color=[0.55, 0.55, 0.55])
+    axs.plot(goal_pos[0], goal_pos[1], 'bo')
     #plt.xlim((-3,3))
     #plt.ylim((-3,3))
-    axs[0].axis('equal')
-    axs[0].set(xlabel='X', ylabel='Y')
-    axs[0].set_title("Particle Trajectories")
-    axs[0].set(xlabel='X', ylabel='Y')
-    axs[0].locator_params(axis="both", integer=True, tight=True)
+    axs.axis('equal')
+    axs.set(xlabel='X', ylabel='Y')
+    axs.set_title("Particle Trajectories")
+    axs.set(xlabel='X', ylabel='Y')
+    axs.locator_params(axis="both", integer=True, tight=True)
 
-    axs[1].axhline(y=1, color='r', linestyle='--', label='Goal distance')
-    axs[1].plot(rels01)
-    axs[1].plot(rels12)
-    axs[1].plot(rels20)
-    axs[1].set(xlabel='Steps', ylabel='Distance')
-    axs[1].set_title("Relative distances")
-    axs[1].locator_params(axis="both", integer=True, tight=True)
+    plt.savefig(path + file_name + "_1" + ".png")
 
-    axs[2].axhline(y=0, color='r', linestyle='--', label='Zero line')
-    axs[2].plot(dist_to_goal)
-    axs[2].set(xlabel='Steps', ylabel='Distance')
-    axs[2].set_title("Distance of formation to goal")
-    axs[2].locator_params(axis="both", integer=True, tight=True)
+    fig, axs = plt.subplots(1)  #create figure and axes
+
+    axs.axhline(y=1, color='r', linestyle='--', label='Goal distance')
+    axs.plot(rels01,color=cmap(0))
+    axs.plot(rels12,color=cmap(1))
+    axs.plot(rels20,color=cmap(2))
+    axs.set(xlabel='Steps', ylabel='Distance')
+    axs.set_title("Relative distances")
+    axs.locator_params(axis="both", integer=True, tight=True)
+
+    plt.savefig(path + file_name + "_2" + ".png")
+
+    fig, axs = plt.subplots(1)  #create figure and axes
+
+    axs.axhline(y=0, color='r', linestyle='--', label='Zero line')
+    axs.plot(dist_to_goal)
+    axs.set(xlabel='Steps', ylabel='Distance')
+    axs.set_title("Distance of formation to goal")
+    axs.locator_params(axis="both", integer=True, tight=True)
     
-    plt.tight_layout()
-    plt.savefig(path)
+    plt.savefig(path + file_name + "_3" + ".png")
+
+def plot_episode_data_formation_w_coll_avoidance(infos, path = [], file_name = []):
+    rels01 = []
+    rels12 = []
+    rels20 = []
+    x_medians = []
+    y_medians = []
+    extra_info = infos[0][-1]
+    goal_pos = extra_info[0]
+    obstacle_pos = extra_info[1]
+    #obstacle_pos = infos[0][4][1::]
+    #TODO: Generalize code
+    for info in infos:
+        rel01 = np.sqrt(np.sum((info[0] - info[1])**2))
+        rel12 = np.sqrt(np.sum((info[1] - info[2])**2))
+        rel20 = np.sqrt(np.sum((info[2] - info[0])**2))
+        rels01.append(rel01)
+        rels12.append(rel12)
+        rels20.append(rel20)
+
+        # Compute median points
+        points = info[:-1]
+        median = geometric_median(points, method='minimize')
+        x_medians.append(median[0])
+        y_medians.append(median[1])
+
+    # Compute distance of median to goal
+    dist_to_goal = np.sqrt((x_medians-goal_pos[0])**2 + (y_medians-goal_pos[1])**2) 
+    
+    #plt.rc('axes', prop_cycle=cycler('color', ['c', 'm', 'y', 'k'])) 
+    cmap = plt.cm.get_cmap('tab10', 6)
+
+    fig, axs = plt.subplots(1)  #create figure and axes
+    
+    for i in range(len(infos[0])-1):
+       pos =  [row[i] for row in infos]
+       x = [row[0] for row in pos]
+       y = [row[1] for row in pos]
+       axs.plot(x, y, color = cmap(i))
+       axs.plot(x[-1], y[-1], 'o', color=[0.4, 0.4, 0.4])
+
+    for obs in obstacle_pos:
+         axs.plot(obs.state.p_pos[0], obs.state.p_pos[1], 'ro')
+
+    axs.plot(goal_pos[0], goal_pos[1], 'bo')
+    #plt.xlim((-3,3))
+    #plt.ylim((-3,3))
+    axs.axis('equal')
+    axs.set(xlabel='X', ylabel='Y')
+    axs.set_title("Particle Trajectories")
+    axs.set(xlabel='X', ylabel='Y')
+    axs.locator_params(axis="both", integer=True, tight=True)
+
+    plt.savefig(path + file_name + "_1" + ".png")
+
+    fig, axs = plt.subplots(1)  #create figure and axes
+
+    axs.axhline(y=1, color='r', linestyle='--', label='Goal distance')
+    axs.plot(rels01, color = cmap(0))
+    axs.plot(rels12, color = cmap(1))
+    axs.plot(rels20, color = cmap(2))
+    axs.set(xlabel='Steps', ylabel='Distance')
+    axs.set_title("Relative distances")
+    axs.locator_params(axis="both", integer=True, tight=True)
+
+    plt.savefig(path + file_name + "_2" + ".png")
+
+
+    fig, axs = plt.subplots(1)  #create figure and axes
+
+    axs.axhline(y=0, color='r', linestyle='--', label='Zero line')
+    axs.plot(dist_to_goal)
+    axs.set(xlabel='Steps', ylabel='Distance')
+    axs.set_title("Distance of formation to goal")
+    axs.locator_params(axis="both", integer=True, tight=True)
+    
+    plt.savefig(path + file_name + "_3" + ".png")
 
 
 # Saves the gif for system behaviour
