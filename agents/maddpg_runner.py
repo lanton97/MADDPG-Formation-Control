@@ -146,8 +146,6 @@ class MADDPGRunner():
             if self.is_done(dones):
                 break
 
-        print(prev_states[-1])
-
         return episodic_reward, episode_info
 
     # Run a noiseless episode to observe agent behaviour
@@ -177,7 +175,6 @@ class MADDPGRunner():
             time.sleep(waitTime)
 
             episode_info.append(info)
-            #print(prev_states[-1])
 
         return states, episodic_reward, episode_info, images
 

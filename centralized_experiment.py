@@ -5,7 +5,7 @@ import argparse
 
 parser = argparse.ArgumentParser(description='File to run experiments for som scenario with a centralized agent.')
 parser.add_argument('--scenario', dest='scenario_name', default='formation_w_coll_avoidance',
-                    help='Name of the scenario we want to run: formation_w_coll_avoidance or formation_w_goal')
+                    help='Name of the scenario we want to run: formation_w_coll_avoidance, formation_w_goal or simple_formation')
 
 parser.add_argument('--num_eps', dest='num_eps', default=1000,
                     help='Number of episodes to train for.', type=int)
@@ -13,20 +13,20 @@ parser.add_argument('--num_eps', dest='num_eps', default=1000,
 parser.add_argument('--save_images', dest='images', default='True',
                     help='True to save images and gifs, anything else not to.')
 
-parser.add_argument('--save_models', dest='save_model', default='False',
+parser.add_argument('--save_models', dest='save_model', default='True',
                     help='True to save models, anything not to.')
 
-parser.add_argument('--load_models', dest='load_model', default='True',
+parser.add_argument('--load_models', dest='load_model', default='False',
                     help='True to load models, anything else not to.')
 
-parser.add_argument('--train', dest='train', default='False',
+parser.add_argument('--train', dest='train', default='True',
                     help='True to train models, anything else not to.')
 
-parser.add_argument('--save_suffix', dest='save_suffix', default="report",
-                    help='Suffix for saving the file')
+parser.add_argument('--save_suffix', dest='save_suffix', default="",
+                    help='Suffix for saving the file.')
                     
-parser.add_argument('--load_suffix', dest='load_suffix', default="report",
-                    help='Suffix for loading the file')
+parser.add_argument('--load_suffix', dest='load_suffix', default="",
+                    help='Suffix for loading the file.')
 
 
 args = parser.parse_args()

@@ -87,8 +87,6 @@ class DDPGAgent():
         self, state_batch, action_batch, reward_batch, next_state_batch, done_batch
     ):
 
-        #tf.print(type(state_batch), type(reward_batch), type(action_batch))
-        #tf.print(type(state_batch[0]), type(reward_batch[0]), type(action_batch[0]))
         # Training and updating Actor & Critic networks.
         # See Pseudo Code.
         with tf.GradientTape() as tape:
@@ -138,19 +136,16 @@ class DDPGAgent():
                     self._actor_best.set_weights(self._actor_model.get_weights())
                     self._critic_best.set_weights(self._critic_model.get_weights())
                     best_reward = episodic_reward
-                    #print('\r\nUpdating best model! best_reward = {}\r\n'.format(best_reward))
 
                 ep_reward_list.append(episodic_reward)
                 # Mean of last 40 episodes
                 avg_reward = np.mean(ep_reward_list[-40:])
-                #print("Episode * {} * Avg Reward is ==> {}".format(ep, avg_reward))
 
                 # Save best model on average
                 if(i >= 40 and (best_reward_avg == None or avg_reward > best_reward_avg)):
                     self._actor_best_average.set_weights(self._actor_model.get_weights())
                     self._critic_best_average.set_weights(self._critic_model.get_weights())
                     best_reward_avg = avg_reward
-                    #print('\r\nUpdating best model average! best_reward_avg = {}\r\n'.format(best_reward_avg))
 
                 t.set_description(f'Episode {i}')
                 episodic_reward_str = "⠀{:6.0f}".format(episodic_reward) #Extra spacing was ignored. So I added an invisible character right before
@@ -178,7 +173,6 @@ class DDPGAgent():
             state, reward, done, info = self._env.step(action)
             action = action[0]
             reward = tf.cast(reward, dtype=tf.float32)
-            #print(state) 
             self._buffer.add((prev_state, action, reward, state, done))
             episodic_reward += reward
 
@@ -203,7 +197,6 @@ class DDPGAgent():
         states = []
         images = []
         for i in range(num_steps):
-            #print("Step {}".format(i))
             if render:
                 img = self._env.render(mode)
                 images.append(img[0])
@@ -214,11 +207,10 @@ class DDPGAgent():
             # Recieve state and reward from environment.
             state, reward, done, info = self._env.step(action)
             reward = tf.cast(reward, dtype=tf.float32)
-            #print(state) 
             episodic_reward += reward
             # End this episode when `done` is True
-            #if done:
-                #break
+            if done:
+                break
             prev_state = state
             time.sleep(waitTime)
             episode_info.append(info)
