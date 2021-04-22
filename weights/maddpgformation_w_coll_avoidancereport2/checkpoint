@@ -1,0 +1,2 @@
+model_checkpoint_path: "_critic_best_average"
+all_model_checkpoint_paths: "_critic_best_average"
