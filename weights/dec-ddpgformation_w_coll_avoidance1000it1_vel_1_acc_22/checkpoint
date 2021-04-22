@@ -1,2 +1,0 @@
-model_checkpoint_path: "target_critic"
-all_model_checkpoint_paths: "target_critic"
