@@ -5,7 +5,7 @@ import argparse
 
 
 parser = argparse.ArgumentParser(description='File to run experiments for som scenario with a centralized agent.')
-parser.add_argument('--agent', dest='agent', default='maddpg',
+parser.add_argument('--agent', dest='agent', default='decddpg',
         help='Name of the agent types: Valid values are \'decddpg\' and \'maddpg\'')
 
 parser.add_argument('--scenario', dest='scenario_name', default='formation_w_coll_avoidance',
@@ -26,10 +26,10 @@ parser.add_argument('--load_models', dest='load_model', default='False',
 parser.add_argument('--train', dest='train', default='True',
                     help='True to train models, anything else not to.')
 
-parser.add_argument('--save_suffix', dest='save_suffix', default="1000it1_vel_1_acc_2",
+parser.add_argument('--save_suffix', dest='save_suffix', default="report",
                     help='Suffix for saving the file')
                     
-parser.add_argument('--load_suffix', dest='load_suffix', default="1000it1_vel_1_acc_2",
+parser.add_argument('--load_suffix', dest='load_suffix', default="report",
                     help='Suffix for loading the file')
 
 args = parser.parse_args()
