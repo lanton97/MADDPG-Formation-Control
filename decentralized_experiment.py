@@ -3,8 +3,7 @@ from agents import maddpg_runner
 from train_and_test.util import *
 import argparse
 
-
-parser = argparse.ArgumentParser(description='File to run experiments for som scenario with a decentralized agent.')
+parser = argparse.ArgumentParser(description='File to run experiments for some scenario with a decentralized agent.')
 parser.add_argument('--agent', dest='agent', default='maddpg',
         help='Name of the agent types: Valid values are \'decddpg\' and \'maddpg\'')
 
@@ -17,13 +16,13 @@ parser.add_argument('--num_eps', dest='num_eps', default=1000,
 parser.add_argument('--save_images', dest='images', default='True',
                     help='True to save images and gifs, False not to.')
 
-parser.add_argument('--save_models', dest='save_model', default='True',
+parser.add_argument('--save_models', dest='save_model', default='False',
                     help='True to save models, False not to.')
 
-parser.add_argument('--load_models', dest='load_model', default='False',
+parser.add_argument('--load_models', dest='load_model', default='True',
                     help='True to load models, anything not to.')
 
-parser.add_argument('--train', dest='train', default='True',
+parser.add_argument('--train', dest='train', default='False',
                     help='True to train models, anything else not to.')
 
 parser.add_argument('--save_suffix', dest='save_suffix', default="report",
@@ -95,12 +94,12 @@ if ((args.train=='True') & (args.images=='True')):
 
 # Save information on the systems performance
 if args.images=='True':
-    plot_episode_data(args.scenario_name, info_last_1, path=dir+'info_last_1.png')
-    plot_episode_data(args.scenario_name, info_last_2, path=dir+'info_last_2.png')
-    plot_episode_data(args.scenario_name, info_last_overall_1, path=dir+'info_overall_1.png')
-    plot_episode_data(args.scenario_name, info_last_overall_2, path=dir+'info_overall_2.png')
-    plot_episode_data(args.scenario_name, info_last_average_1, path=dir+'info_average_1.png')
-    plot_episode_data(args.scenario_name, info_last_average_2, path=dir+'info_average_2.png')
+    plot_episode_data(args.scenario_name, info_last_1, path=dir, file_name = 'info_last_1')
+    plot_episode_data(args.scenario_name, info_last_2, path=dir, file_name = 'info_last_2')
+    plot_episode_data(args.scenario_name, info_last_overall_1, path=dir, file_name = 'info_overall_1')
+    plot_episode_data(args.scenario_name, info_last_overall_2, path=dir, file_name = 'info_overall_2')
+    plot_episode_data(args.scenario_name, info_last_average_1, path=dir, file_name = 'info_average_1')
+    plot_episode_data(args.scenario_name, info_last_average_2, path=dir, file_name = 'info_average_2')
 
 plt.show()
 

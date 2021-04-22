@@ -33,7 +33,7 @@ class Scenario(BaseScenario):
             landmark.collidable = False
             landmark.movable = False
 
-        world.landmarks = world.goal
+        world.landmarks = world.goal   #TODO: copy goal to landmark instead of by reference (make sure it doesnt cause any bugs)
         world.landmarks += world.obstacles
         
         # make initial conditions
@@ -125,7 +125,7 @@ class Scenario(BaseScenario):
         return obs
 
     def info(self, agent, world):
-        return self.goal_pos
+        return [self.goal_pos, world.obstacles]
 
     def done(self, agent, world):
         return False
