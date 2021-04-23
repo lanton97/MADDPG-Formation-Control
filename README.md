@@ -42,8 +42,9 @@ change line 20 from
  reraise(prefix="Error occured while running `from pyglet.gl import *`",suffix="HINT: make sure you have OpenGL install. On Ubuntu, you can run 'apt-get install python-opengl'. If you're running on a server, you may need a virtual frame buffer; something like this should work: 'xvfb-run -s \"-screen 0 1400x900x24\" python <your_script.py>'")
  ```
  to  
+ ```
  raise ImportError("Error occured while running `from pyglet.gl import *")
-
+```
 
 ## Training the Agents
 We define two different training scripts depending on whether we want to train a centralized or decentralized agent.
