@@ -51,7 +51,7 @@ class Scenario(BaseScenario):
             landmark.state.p_vel = np.zeros(world.dim_p)
 
         # Set a random goal position
-        self.goal_pos = np.random.uniform(-3, +3, world.dim_p)
+        self.goal_pos = np.random.uniform(-1, +1, world.dim_p)
 
         # Update our goal landmark for visualization
         world.goal[0].color = np.array([0.0, 0.0, 1.0])
