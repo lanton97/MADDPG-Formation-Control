@@ -47,6 +47,19 @@ change line 20 from
  raise ImportError("Error occured while running `from pyglet.gl import *")
 ```
 
+it is also likely that you will encounter this error
+```
+AttributeError: 'ImageData' object has no attribute 'data'
+```
+if you do, change the file \maddpg-formation-control\src\multiagent\multiagent\rendering.py" in line 101 from
+```
+arr = np.fromstring(image_data.data, dtype=np.uint8, sep='')
+```
+to
+```
+arr = np.fromstring(image_data.get_data(), dtype=np.uint8, sep='')
+```
+
 ## Training the Agents
 We define two different training scripts depending on whether we want to train a centralized or decentralized agent.
 
