@@ -4,6 +4,7 @@ import tqdm
 from agents.maddpg import MADDPGAgent
 from agents.util import ReplayBuffer
 import time
+import copy
 
 # A class which stores the MADDPG agents and acts as an interface between them and the environment
 class MADDPGRunner():
@@ -174,7 +175,7 @@ class MADDPGRunner():
             prev_states = states
             time.sleep(waitTime)
 
-            episode_info.append(info)
+            episode_info.append(copy.deepcopy(info))
 
         return states, episodic_reward, episode_info, images
 
