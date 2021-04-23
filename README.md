@@ -47,7 +47,8 @@ change line 20 from
  raise ImportError("Error occured while running `from pyglet.gl import *")
 ```
 
-it is also likely that you will encounter this error
+
+It is also likely that you will encounter the following error
 ```
 AttributeError: 'ImageData' object has no attribute 'data'
 ```
