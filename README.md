@@ -102,3 +102,9 @@ Below, we include the training curves for the different agents on the formation 
 
 ![alt text](img/training_data.png "Training Curves")
 
+Find the images for the behavioural analysis of the MADDPG agents below.
+
+
+![alt text](img/info_average_2_1.png "MADDPG Particle Trajectories")
+![alt text](img/info_average_2_2.png "MADDPG Formation Error")
+![alt text](img/info_average_2_3.png "MADDPG Formation Goal Distance")
