@@ -10,6 +10,16 @@ Our project is dependent on OpenAI's Multi-agent Particle Environment with insta
 
 The environment used is out of date, so in order to run it, the changes detailed [here](https://github.com/openai/multiagent-particle-envs/pull/54) must be made in the library.
 
+The required modifications are in the file 
+\maddpg-formation-control\src\multiagent\multiagent\multi_discrete.py"
+
+Comment out gym.spaces import prng in line 7,  
+and change line 33 from  
+random_array = prng.np_random.rand(self.num_discrete_space)  
+to  
+random_array = np.random.RandomState().rand(self.num_discrete_space)
+
+
 ## Training the Agents
 We define two different training scripts depending on whether we want to train a centralized or decentralized agent.
 
