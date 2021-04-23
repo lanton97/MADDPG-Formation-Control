@@ -24,6 +24,26 @@ to
 random_array = np.random.RandomState().rand(self.num_discrete_space)
 ```
 
+If you encounter the following error  
+```
+ImportError: cannot import name 'reraise' from 'gym.utils'
+```
+Open maddpg-formation-control\src\multiagent\multiagent\rendering.py and comment out from gym.utils import reraise in line 14,  
+change line 20 from  
+```
+ reraise(suffix="HINT: you can install pyglet directly via 'pip install pyglet'. But if you really just want to install all Gym dependencies and not have to think about it, 'pip install -e .[all]' or 'pip install gym[all]' will do it.")
+ ```
+ to  
+ ```
+ raise ImportError("HINT: you can install pyglet directly via 'pip install pyglet'. But if you really just want to install all Gym dependencies and not have to think about it, 'pip install -e .[all]' or 'pip install gym[all]' will do it."),
+ ```
+ and line 25 from  
+ ```
+ reraise(prefix="Error occured while running `from pyglet.gl import *`",suffix="HINT: make sure you have OpenGL install. On Ubuntu, you can run 'apt-get install python-opengl'. If you're running on a server, you may need a virtual frame buffer; something like this should work: 'xvfb-run -s \"-screen 0 1400x900x24\" python <your_script.py>'")
+ ```
+ to  
+ raise ImportError("Error occured while running `from pyglet.gl import *")
+
 
 ## Training the Agents
 We define two different training scripts depending on whether we want to train a centralized or decentralized agent.
