@@ -102,7 +102,3 @@ Below, we include the training curves for the different agents on the formation 
 
 ![alt text](img/training_data.png "Training Curves")
 
-Find the associated graphs for the trajectories and errors below.
-
-TMP PUT STUFF HERE
-
