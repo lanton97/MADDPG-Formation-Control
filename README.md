@@ -15,9 +15,14 @@ The required modifications are in the file
 
 Comment out gym.spaces import prng in line 7,  
 and change line 33 from  
+
+```
 random_array = prng.np_random.rand(self.num_discrete_space)  
+```
 to  
+```
 random_array = np.random.RandomState().rand(self.num_discrete_space)
+```
 
 
 ## Training the Agents
