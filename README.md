@@ -1,4 +1,5 @@
 # MADDPG-Formation-Control
+## Installing the project
 
 To install this projects dependencies, run
 
